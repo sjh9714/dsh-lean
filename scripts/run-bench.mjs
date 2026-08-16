@@ -10,10 +10,11 @@
 // of the session log. Results land in bench/results/<label>-<timestamp>.json.
 
 import { execFileSync, spawnSync } from 'node:child_process'
-import { cpSync, mkdirSync, writeFileSync, existsSync, readdirSync, statSync, realpathSync } from 'node:fs'
+import { cpSync, mkdirSync, writeFileSync, existsSync, readdirSync, statSync, realpathSync, readFileSync } from 'node:fs'
 import { join, resolve, basename } from 'node:path'
 import { tmpdir } from 'node:os'
 import { costUsd } from '../lib/pricing.mjs'
+import { decodeZstdFrames } from '../lib/zstd-frames.mjs'
 
 const REPO = resolve(import.meta.dirname, '..')
 
@@ -59,7 +60,13 @@ function newestSessionFile(dir) {
 }
 
 function readUsage(sessionFile) {
-  const text = execFileSync('zstd', ['-dc', sessionFile], { encoding: 'utf8', maxBuffer: 1 << 29 })
+  let text
+  try {
+    text = decodeZstdFrames(readFileSync(sessionFile))
+  } catch {
+    // Older node without built-in zstd falls back to the CLI tool.
+    text = execFileSync('zstd', ['-dc', sessionFile], { encoding: 'utf8', maxBuffer: 1 << 29 })
+  }
   const byStep = new Map()
   let firstHeader = null
   for (const line of text.split('\n')) {

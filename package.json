@@ -1,6 +1,6 @@
 {
   "name": "dsh-lean",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Same answer, smaller bill. Audit where your DeepSeek Harness (DSH) tokens go with one command, then cut the prompt prefix 53%. 同样的结果，更小的账单。",
   "license": "MIT",
   "type": "module",
