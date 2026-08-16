@@ -55,26 +55,32 @@ DeepSeek 对缓存未命中的输入 token 收费是命中的 **50 倍**，`deep
 ## 安装
 
 ```sh
-dsh plugin --profile web add dsh-lean
+dsh plugin --profile headless add dsh-lean
 ```
-
-把 `web` 换成你在用的 profile。装完就这样，没有配置文件要改。
 
 直接从仓库装也行，不过上面的 npm 形式更好，预构建的包能跳过 pnpm 的 `allowBuilds` 构建授权步骤。
 
 ```sh
-dsh plugin --profile web add "github:sjh9714/dsh-lean"
+dsh plugin --profile headless add "github:sjh9714/dsh-lean"
 ```
+
+### 目前它对 web profile 不起作用，原因如下
+
+本页所有数字都是在 `--profile headless` 上测的。在 `--profile web` 上这个 patch 目前什么也不做，说成有用就是错的。
+
+web 的 bundle 在顶层已经把这些行全部关掉了，然后挂上 `agent-presets` 并把 `default` 设为 `standard`，而 `standard` preset 在它自己的组合里重新挂载了完整的工具目录。bundle patch 层叠加在 profile 树之上，够不到 preset 组合内部，所以它在 web profile 上针对的那些行本来就已经是关的。这台机器上一次真实的 web 会话依然发出了全部 25 个工具。
+
+要让它在 web profile 上生效，需要往 `$DSH_HOME/.agent-presets` 里装一个 preset，而不是打 patch。这是接下来要做的事。在那之前，请装在实测有效的 `headless` 上。
 
 卸载。
 
 ```sh
-dsh plugin --profile web remove dsh-lean
+dsh plugin --profile headless remove dsh-lean
 ```
 
 ## 它关掉了什么
 
-`tool-workflow`、`tool-subagent`、`tool-subagent-fork`、`tool-subagent-control`、`tool-subagent-list-agents`、`tool-subagent-report`、`tool-goal`、`tool-jobs`、`tool-ralph`。
+`tool-workflow`、`tool-subagent`、`tool-subagent-fork`、`tool-subagent-control`、`tool-subagent-list-agents`、`tool-goal`、`tool-jobs`、`tool-ralph`。
 
 留下的是编码会话真正会用的那些。`bash`、`read`、`write`、`edit`、`glob`、`grep`、`str_replace_editor`、`todo_write`、`skill`、`read_image`、`web_search`、`exit_plan_mode`。
 

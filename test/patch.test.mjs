@@ -25,7 +25,6 @@ const EXPECTED = [
   'tool-subagent-fork',
   'tool-subagent-control',
   'tool-subagent-list-agents',
-  'tool-subagent-report',
   'tool-goal',
   'tool-jobs',
   'tool-ralph',
@@ -71,4 +70,35 @@ test('the audit decoder reads every frame of a multi-frame zstd file', async () 
   const parts = ['{"a":1}\n', '{"b":2}\n', '{"c":3}\n']
   const multi = Buffer.concat(parts.map((p) => zstdCompressSync(Buffer.from(p))))
   assert.equal(decodeZstdFrames(multi), parts.join(''))
+})
+
+// The web bundle already disables these rows at the top level and then mounts
+// the real catalog inside the `standard` agent preset, which a bundle patch
+// cannot reach. This test pins that fact so the README can never quietly go
+// back to claiming the patch does something on `--profile web`.
+test('the web bundle already disables these rows, so the patch is inert there', (t) => {
+  const npx = join(homedir(), '.npm/_npx')
+  let webPatch = null
+  if (existsSync(npx)) {
+    for (const dir of readdirSync(npx)) {
+      const p = join(npx, dir, 'node_modules/@deepseek-ai/dsh-web-app/cordis.patch.yml')
+      if (existsSync(p)) webPatch = p
+    }
+  }
+  if (!webPatch) {
+    t.skip('no @deepseek-ai/dsh-web-app install found to check against')
+    return
+  }
+  const web = readFileSync(webPatch, 'utf8')
+  const stillLive = EXPECTED.filter((id) => {
+    const at = web.indexOf(`- id: ${id}\n`)
+    if (at === -1) return false
+    const next = web.indexOf('\n- id:', at + 1)
+    return !web.slice(at, next === -1 ? undefined : next).includes('disabled: true')
+  })
+  assert.deepEqual(
+    stillLive,
+    [],
+    `these rows are NOT already disabled in dsh-web-app, so disabling them there is a real change and the README claim would need revisiting: ${stillLive.join(', ')}`,
+  )
 })

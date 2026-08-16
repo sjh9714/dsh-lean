@@ -14,6 +14,7 @@ import { homedir } from 'node:os'
 import { execFileSync } from 'node:child_process'
 import { decodeZstdFrames } from '../lib/zstd-frames.mjs'
 import { costUsd, priceFor } from '../lib/pricing.mjs'
+import { projectKey } from '../lib/project-key.mjs'
 
 const DSH_HOME = process.env.DSH_HOME ?? join(homedir(), '.dsh')
 const SESSIONS = join(DSH_HOME, 'sessions')
@@ -41,9 +42,19 @@ function readSession(file) {
   let text
   try {
     text = decodeZstdFrames(buf)
-  } catch {
-    // Last resort, the zstd binary handles concatenated frames natively.
-    text = execFileSync('zstd', ['-dc', file], { encoding: 'utf8', maxBuffer: 1 << 29 })
+  } catch (primary) {
+    // Node gained built-in zstd in 22.15. Older runtimes fall back to the zstd
+    // binary, which is not installed by default on macOS or most Linux distros,
+    // so say what to do rather than throwing a spawn stack trace at the reader.
+    try {
+      text = execFileSync('zstd', ['-dc', file], { encoding: 'utf8', maxBuffer: 1 << 29 })
+    } catch {
+      console.error('Could not read the session log, which is Zstandard compressed.')
+      console.error(`  node ${process.version} could not decode it (${primary.message})`)
+      console.error('  and the zstd command line tool is not on PATH.')
+      console.error('Fix either one. Upgrade to Node 22.15 or newer, or install zstd.')
+      process.exit(1)
+    }
   }
   const events = []
   for (const line of text.split('\n')) {
@@ -86,7 +97,7 @@ function pickSession(arg) {
     return all[0].p
   }
   const cwd = resolve(arg ?? process.cwd())
-  const dir = join(SESSIONS, `-${cwd.replaceAll('/', '-')}--`)
+  const dir = join(SESSIONS, projectKey(cwd))
   const found = newestSession(dir)
   if (found) return found
   console.error(`No dsh session recorded for ${cwd}`)
@@ -218,7 +229,7 @@ function main() {
   console.log('  Estimated by scaling your own first-request tokens by the share of prefix')
   console.log('  characters removed. Benchmarked end to end it came out at 18% to 42%.')
   console.log()
-  console.log('    dsh plugin --profile web add dsh-lean')
+  console.log('    dsh plugin --profile headless add dsh-lean')
   console.log('    https://github.com/sjh9714/dsh-lean')
   console.log()
 }

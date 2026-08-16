@@ -55,26 +55,32 @@ Disabling a tool row also drops the paragraph the system prompt generates to exp
 ## Install
 
 ```sh
-dsh plugin --profile web add dsh-lean
+dsh plugin --profile headless add dsh-lean
 ```
-
-Replace `web` with whichever profile you use. That is the whole installation, there is no config file to edit.
 
 Installing straight from the repository also works, though the npm form above is better because a prebuilt package skips pnpm's `allowBuilds` approval step.
 
 ```sh
-dsh plugin --profile web add "github:sjh9714/dsh-lean"
+dsh plugin --profile headless add "github:sjh9714/dsh-lean"
 ```
+
+### It does not change the web profile yet, and here is why
+
+Every number on this page was measured on `--profile headless`. On `--profile web` this patch currently does nothing, and saying otherwise would be wrong.
+
+The web bundle already disables all of these rows at the top level, then mounts `agent-presets` with `default: standard`, and the `standard` preset re-mounts the full catalog inside its own composition. A bundle patch layer composes over the profile tree and never reaches inside a preset composition, so the rows it targets on the web profile are ones that were already off. A real web session on this machine still sent all 25 tools.
+
+Making this work on the web profile needs a preset shipped into `$DSH_HOME/.agent-presets` rather than a patch, which is the next thing to build. Until then, install it on `headless` where it is measured to work.
 
 To remove it.
 
 ```sh
-dsh plugin --profile web remove dsh-lean
+dsh plugin --profile headless remove dsh-lean
 ```
 
 ## What it turns off
 
-`tool-workflow`, `tool-subagent`, `tool-subagent-fork`, `tool-subagent-control`, `tool-subagent-list-agents`, `tool-subagent-report`, `tool-goal`, `tool-jobs`, `tool-ralph`.
+`tool-workflow`, `tool-subagent`, `tool-subagent-fork`, `tool-subagent-control`, `tool-subagent-list-agents`, `tool-goal`, `tool-jobs`, `tool-ralph`.
 
 What stays is the set a coding session actually uses. `bash`, `read`, `write`, `edit`, `glob`, `grep`, `str_replace_editor`, `todo_write`, `skill`, `read_image`, `web_search`, `exit_plan_mode`.
 
