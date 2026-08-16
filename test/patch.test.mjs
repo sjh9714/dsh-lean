@@ -102,3 +102,21 @@ test('the web bundle already disables these rows, so the patch is inert there', 
     `these rows are NOT already disabled in dsh-web-app, so disabling them there is a real change and the README claim would need revisiting: ${stillLive.join(', ')}`,
   )
 })
+
+// The preset transform is the only non-trivial logic in the plugin, and it has
+// to fail closed: a composition that no longer carries these rows must return
+// null so apply() warns instead of writing a preset that silently changes
+// nothing.
+test('disableRows sets disabled on each named top-level row, once', async () => {
+  const { disableRows } = await import('../index.mjs')
+  const yaml = ['- id: persona', "  name: 'x'", '', '- id: tool-goal', "  name: 'y'", '', '- id: delegation', '  group: true'].join('\n')
+  const out = disableRows(yaml, ['tool-goal', 'delegation'])
+  assert.match(out, /- id: tool-goal\n {2}disabled: true\n/)
+  assert.match(out, /- id: delegation\n {2}disabled: true\n/)
+  assert.equal(disableRows(out, ['tool-goal', 'delegation']), out, 'must be idempotent')
+})
+
+test('disableRows returns null when a row it expects is gone', async () => {
+  const { disableRows } = await import('../index.mjs')
+  assert.equal(disableRows('- id: persona\n', ['tool-goal']), null)
+})

@@ -61,28 +61,34 @@ DeepSeek 对缓存未命中的输入 token 收费是命中的 **50 倍**，`deep
 ## 安装
 
 ```sh
-dsh plugin --profile headless add dsh-lean
+dsh plugin --profile web add dsh-lean        # web UI，装完在模式菜单里选 "Lean"
+dsh plugin --profile headless add dsh-lean   # 一次性 CLI，装完立即生效
 ```
 
 直接从仓库装也行，不过上面的 npm 形式更好，预构建的包能跳过 pnpm 的 `allowBuilds` 构建授权步骤。
 
 ```sh
-dsh plugin --profile headless add "github:sjh9714/dsh-lean"
+dsh plugin --profile web add "github:sjh9714/dsh-lean"
 ```
 
-### 目前它对 web profile 不起作用，原因如下
+卸载用 `dsh plugin --profile <name> remove dsh-lean`。在 web profile 上这样会留下已生成的 preset，想一并删掉就删 `$DSH_HOME/.agent-presets/lean`。
 
-本页所有数字都是在 `--profile headless` 上测的。在 `--profile web` 上这个 patch 目前什么也不做，说成有用就是错的。
+### 两个 profile 的机制不一样，这点很重要
 
-web 的 bundle 在顶层已经把这些行全部关掉了，然后挂上 `agent-presets` 并把 `default` 设为 `standard`，而 `standard` preset 在它自己的组合里重新挂载了完整的工具目录。bundle patch 层叠加在 profile 树之上，够不到 preset 组合内部，所以它在 web profile 上针对的那些行本来就已经是关的。这台机器上一次真实的 web 会话依然发出了全部 25 个工具。
+headless profile 把工具挂在顶层行上，所以 bundle patch 直接就能关掉它们。
 
-要让它在 web profile 上生效，需要往 `$DSH_HOME/.agent-presets` 里装一个 preset，而不是打 patch。这是接下来要做的事。在那之前，请装在实测有效的 `headless` 上。
+web profile 不是这样。它的 bundle 在顶层已经把那些行关了，然后挂上 `agent-presets`，真正的工具目录在 `standard` 这个 preset 的组合里面。**patch 层够不到 preset 组合内部。** 所以在 web profile 上，本包改为通过 dsh 自己的 `agentPresets.copy()` 授权 API 复制一份 `standard`，然后在副本里关掉 delegation 组、goal 工具和 jobs 工具。副本是从你实际拥有的那份 `standard` 复制的，所以 dsh 升级会被继承，而不是和一份内置的分叉渐行渐远。
 
-卸载。
+它不会改你的默认 preset。默认值指向一个生成失败的 preset 会在挂载时直接报错，为了一点便利把 profile 弄坏不值得。"Lean" 会出现在模式菜单里，由你来选。
 
-```sh
-dsh plugin --profile headless remove dsh-lean
-```
+在 web profile 上实测，同一个提示词、同一个工作目录，各跑一次会话。
+
+| | 工具数 | 系统提示词 | 工具 schema | 前缀 |
+|---|---|---|---|---|
+| Standard mode | 25 | 6,100 字符 | 26,336 字符 | 32,436 字符 |
+| Lean | 12 | 3,492 字符 | 11,842 字符 | **15,334 字符** |
+
+也就是砍掉 52.7%，和 headless 的比例一致。上面那张花费表是在 headless 上测的，因为基准测试脚本能在那里把一个任务从头驱动到尾；这里的 web 数字只包含前缀。
 
 ## 它关掉了什么
 

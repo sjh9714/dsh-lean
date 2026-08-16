@@ -35,3 +35,12 @@
 
 - id: tool-ralph
   disabled: true
+
+# On a profile that mounts `agent-presets`, the rows above are already off and
+# the real catalog lives inside a preset composition no patch layer can reach.
+# This row authors a lean copy of `standard` there instead. It injects
+# `agentPresets`, so it never mounts on profiles without that service.
+- insert:
+    - id: dsh-lean
+      name: 'dsh-lean'
+      inject: [agentPresets]

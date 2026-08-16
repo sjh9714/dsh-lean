@@ -61,28 +61,34 @@ Disabling a tool row also drops the paragraph the system prompt generates to exp
 ## Install
 
 ```sh
-dsh plugin --profile headless add dsh-lean
+dsh plugin --profile web add dsh-lean        # web UI, then pick "Lean" in the mode menu
+dsh plugin --profile headless add dsh-lean   # one-shot CLI, applies immediately
 ```
 
 Installing straight from the repository also works, though the npm form above is better because a prebuilt package skips pnpm's `allowBuilds` approval step.
 
 ```sh
-dsh plugin --profile headless add "github:sjh9714/dsh-lean"
+dsh plugin --profile web add "github:sjh9714/dsh-lean"
 ```
 
-### It does not change the web profile yet, and here is why
+To remove it, `dsh plugin --profile <name> remove dsh-lean`. On the web profile that leaves the authored preset behind; delete `$DSH_HOME/.agent-presets/lean` to remove it too.
 
-Every number on this page was measured on `--profile headless`. On `--profile web` this patch currently does nothing, and saying otherwise would be wrong.
+### The two profiles work differently, and that matters
 
-The web bundle already disables all of these rows at the top level, then mounts `agent-presets` with `default: standard`, and the `standard` preset re-mounts the full catalog inside its own composition. A bundle patch layer composes over the profile tree and never reaches inside a preset composition, so the rows it targets on the web profile are ones that were already off. A real web session on this machine still sent all 25 tools.
+The headless profile mounts its tools as top-level rows, so a bundle patch turns them off directly.
 
-Making this work on the web profile needs a preset shipped into `$DSH_HOME/.agent-presets` rather than a patch, which is the next thing to build. Until then, install it on `headless` where it is measured to work.
+The web profile does not. Its bundle already disables those rows at the top level and then mounts `agent-presets`, with the real catalog living inside the `standard` preset composition. **A patch layer cannot reach inside a preset composition.** So on the web profile this package instead copies `standard` through dsh's own `agentPresets.copy()` authoring API and disables the delegation group, the goal tool and the jobs tool in the copy. The copy is made from whatever `standard` you actually have, so a dsh upgrade is inherited rather than diverging from a vendored fork.
 
-To remove it.
+It does not change your default preset. A default pointing at a preset that failed to author fails loud at mount time, which would break the profile over a convenience. "Lean" appears in the mode menu and you pick it.
 
-```sh
-dsh plugin --profile headless remove dsh-lean
-```
+Measured on the web profile, same prompt and same workspace, one session each.
+
+| | tools | system prompt | tool schemas | prefix |
+|---|---|---|---|---|
+| Standard mode | 25 | 6,100 chars | 26,336 chars | 32,436 chars |
+| Lean | 12 | 3,492 chars | 11,842 chars | **15,334 chars** |
+
+That is a 52.7% cut, the same as the headless figure. The cost table above was measured on headless, where the benchmark harness can drive a task end to end; the web numbers here are the prefix only.
 
 ## What it turns off
 
