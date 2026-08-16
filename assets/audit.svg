@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="809" height="919" viewBox="0 0 809 919" role="img" aria-label="npx dsh-lean audit output">
+  <rect width="809" height="919" rx="8" fill="#0f1117"/>
+  <circle cx="20" cy="19" r="5" fill="#ff5f56"/>
+  <circle cx="38" cy="19" r="5" fill="#ffbd2e"/>
+  <circle cx="56" cy="19" r="5" fill="#27c93f"/>
+  <text x="76" y="24" fill="#6e7681" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12">npx dsh-lean audit</text>
+  <text x="22" y="65" fill="#6e7681" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  session   session-14e05ae7-e000-4737-a3c8-d4baad2553f3</text>
+  <text x="22" y="84" fill="#6e7681" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  model     deepseek-v4-flash</text>
+  <text x="22" y="122" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  request    input (miss)    cache hit      output</text>
+  <text x="22" y="141" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  1/1             8,246            0         168</text>
+  <text x="22" y="160" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  1/2               407        8,320          67</text>
+  <text x="22" y="179" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  1/3               258        8,704         185</text>
+  <text x="22" y="198" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  1/4               948        9,088         237</text>
+  <text x="22" y="217" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  1/5             1,583       10,240         445</text>
+  <text x="22" y="236" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  1/6               181       12,160          69</text>
+  <text x="22" y="255" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  1/7               619       12,288         177</text>
+  <text x="22" y="293" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  requests           7</text>
+  <text x="22" y="312" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  prompt tokens      73,042</text>
+  <text x="22" y="331" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  cache hit rate     83.2%</text>
+  <text x="22" y="350" fill="#f0883e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  cache-miss tokens  12,242   &lt;- billed at 50x the cache-hit rate</text>
+  <text x="22" y="369" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  output tokens      1,348</text>
+  <text x="22" y="388" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  cost               $0.002262</text>
+  <text x="22" y="426" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  first request prefix   30,282 chars</text>
+  <text x="22" y="445" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">    system prompt        4,100 chars</text>
+  <text x="22" y="464" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">    tool schemas         26,182 chars across 25 tools</text>
+  <text x="22" y="502" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  largest tool schemas</text>
+  <text x="22" y="521" fill="#f0883e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">      3,986  workflow  &lt;- dsh-lean removes this</text>
+  <text x="22" y="540" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">      3,242  bash</text>
+  <text x="22" y="559" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">      2,380  str_replace_editor</text>
+  <text x="22" y="578" fill="#f0883e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">      1,420  subagent  &lt;- dsh-lean removes this</text>
+  <text x="22" y="597" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">      1,344  todo_write</text>
+  <text x="22" y="616" fill="#f0883e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">      1,296  list_agents  &lt;- dsh-lean removes this</text>
+  <text x="22" y="635" fill="#f0883e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">      1,141  update_goal  &lt;- dsh-lean removes this</text>
+  <text x="22" y="654" fill="#f0883e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">      1,128  subagent_fork  &lt;- dsh-lean removes this</text>
+  <text x="22" y="673" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">      1,072  edit</text>
+  <text x="22" y="692" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">        922  glob</text>
+  <text x="22" y="730" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  dsh-lean would remove 13 of your 25 tools</text>
+  <text x="22" y="749" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">    13,730 of 30,282 prefix chars  (45.3%)</text>
+  <text x="22" y="768" fill="#3fb950" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">    estimated saving on this session   ~3,739 cache-miss tokens, ~$0.000523  (23% of what it cost)</text>
+  <text x="22" y="806" fill="#6e7681" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  Estimated by scaling your own first-request tokens by the share of prefix</text>
+  <text x="22" y="825" fill="#6e7681" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  characters removed. Benchmarked end to end it came out at 18% to 42%.</text>
+  <text x="22" y="863" fill="#58a6ff" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">    dsh plugin --profile web add dsh-lean</text>
+  <text x="22" y="882" fill="#58a6ff" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">    https://github.com/sjh9714/dsh-lean</text>
+</svg>

@@ -12,6 +12,8 @@
 npx dsh-lean audit          # 先看你自己的 token 花在哪了，什么都不用装
 ```
 
+<img src="assets/audit.svg" alt="npx dsh-lean audit 的输出，逐请求缓存拆分、前缀里最大的工具 schema，以及 dsh-lean 会移除哪些" width="100%">
+
 **同样的结果，更小的账单。** 一个 DeepSeek Harness preset，关掉单智能体编码会话根本用不到的工具，把提示词前缀压掉 53%，整场会话省 18% 到 42%。
 
 先跑 audit。它读的是 dsh 本来就写好的会话日志，会列出每个请求的缓存命中拆分、你自己前缀里各个工具 schema 的大小排名，以及这个 preset 在那一场会话上本来能省多少。什么都不装，也没有任何数据离开你的机器。

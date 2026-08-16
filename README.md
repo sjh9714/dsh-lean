@@ -12,6 +12,8 @@ English | [简体中文](./README.zh-CN.md)
 npx dsh-lean audit          # see where your own tokens went, installs nothing
 ```
 
+<img src="assets/audit.svg" alt="npx dsh-lean audit output, showing the per-request cache split, the largest tool schemas in the prefix, and what dsh-lean would remove" width="100%">
+
 **Same answer, smaller bill.** A DeepSeek Harness preset that removes the tool schemas a single-agent coding session never calls, cutting the prompt prefix by 53% and the cost of a session by 18% to 42%.
 
 Start with the audit. It reads a session log dsh already wrote, shows the cache-hit split of every request, ranks the tool schemas in your own prefix, and tells you what this preset would have saved on that exact session. Nothing is installed and nothing leaves your machine.
