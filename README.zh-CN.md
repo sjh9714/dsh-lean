@@ -2,6 +2,16 @@
 
 # dsh-lean
 
+[![npm](https://img.shields.io/npm/v/dsh-lean)](https://www.npmjs.com/package/dsh-lean)
+[![prefix](https://img.shields.io/badge/提示词前缀-缩小_53%25-brightgreen)](#实测)
+[![cost](https://img.shields.io/badge/会话花费-降低_18--42%25-brightgreen)](#实测)
+[![runs](https://img.shields.io/badge/实测-20_次运行-blue)](#自己复现)
+[![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+
+```sh
+dsh plugin --profile web add dsh-lean
+```
+
 **同样的结果，更小的账单。** 一个 DeepSeek Harness preset，关掉单智能体编码会话根本用不到的工具，把提示词前缀压掉 53%，整场会话省 18% 到 42%。
 
 下面每个数字都来自 DeepSeek API 自己返回的用量统计，产出这些数字的测量脚本就在本仓库里。

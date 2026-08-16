@@ -2,6 +2,16 @@ English | [简体中文](./README.zh-CN.md)
 
 # dsh-lean
 
+[![npm](https://img.shields.io/npm/v/dsh-lean)](https://www.npmjs.com/package/dsh-lean)
+[![prefix](https://img.shields.io/badge/prompt_prefix-53%25_smaller-brightgreen)](#measured)
+[![cost](https://img.shields.io/badge/session_cost-18--42%25_lower-brightgreen)](#measured)
+[![runs](https://img.shields.io/badge/measured_over-20_runs-blue)](#reproduce-it)
+[![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+
+```sh
+dsh plugin --profile web add dsh-lean
+```
+
 **Same answer, smaller bill.** A DeepSeek Harness preset that removes the tool schemas a single-agent coding session never calls, cutting the prompt prefix by 53% and the cost of a session by 18% to 42%.
 
 Every number below came out of the DeepSeek API's own usage accounting, and the harness that produced them is in this repository.
