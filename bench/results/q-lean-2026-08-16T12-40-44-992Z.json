@@ -1,0 +1,51 @@
+{
+  "label": "q-lean",
+  "task": "task-00-question",
+  "workspace": "/private/var/folders/kg/y4sm8cfd69xbbclmyhvqpkbc0000gn/T/dsh-bench-task-00-question-q-lean-2026-08-16T12-40-39-855Z",
+  "patches": [
+    "/Users/sungjh/orca/projects/dsh3/cordis.patch.yml"
+  ],
+  "wallMs": 5130,
+  "dshExitCode": 0,
+  "verify": {
+    "skipped": true
+  },
+  "requests": [
+    {
+      "turn": 1,
+      "step": 1,
+      "inputTokens": 4589,
+      "outputTokens": 73,
+      "cacheReadTokens": 0,
+      "reasoningTokens": 29
+    },
+    {
+      "turn": 1,
+      "step": 2,
+      "inputTokens": 68,
+      "outputTokens": 101,
+      "cacheReadTokens": 4608,
+      "reasoningTokens": 0
+    },
+    {
+      "turn": 1,
+      "step": 3,
+      "inputTokens": 219,
+      "outputTokens": 14,
+      "cacheReadTokens": 4736,
+      "reasoningTokens": 0
+    }
+  ],
+  "total": {
+    "inputTokens": 4876,
+    "cacheReadTokens": 9344,
+    "outputTokens": 188,
+    "reasoningTokens": 29
+  },
+  "prefix": {
+    "toolCount": 12,
+    "toolChars": 12452,
+    "systemChars": 1886
+  },
+  "costUsd": 0.0007614432000000001
+}

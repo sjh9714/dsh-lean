@@ -1,0 +1,49 @@
+{
+  "label": "q-baseline",
+  "task": "task-00-question",
+  "workspace": "/private/var/folders/kg/y4sm8cfd69xbbclmyhvqpkbc0000gn/T/dsh-bench-task-00-question-q-baseline-2026-08-16T12-40-53-985Z",
+  "patches": [],
+  "wallMs": 6675,
+  "dshExitCode": 0,
+  "verify": {
+    "skipped": true
+  },
+  "requests": [
+    {
+      "turn": 1,
+      "step": 1,
+      "inputTokens": 8240,
+      "outputTokens": 74,
+      "cacheReadTokens": 0,
+      "reasoningTokens": 30
+    },
+    {
+      "turn": 1,
+      "step": 2,
+      "inputTokens": 136,
+      "outputTokens": 102,
+      "cacheReadTokens": 8192,
+      "reasoningTokens": 0
+    },
+    {
+      "turn": 1,
+      "step": 3,
+      "inputTokens": 289,
+      "outputTokens": 23,
+      "cacheReadTokens": 8320,
+      "reasoningTokens": 0
+    }
+  ],
+  "total": {
+    "inputTokens": 8665,
+    "cacheReadTokens": 16512,
+    "outputTokens": 199,
+    "reasoningTokens": 30
+  },
+  "prefix": {
+    "toolCount": 25,
+    "toolChars": 26182,
+    "systemChars": 4143
+  },
+  "costUsd": 0.0013150536000000003
+}

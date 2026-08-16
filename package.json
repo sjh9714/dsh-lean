@@ -1,0 +1,49 @@
+{
+  "name": "dsh-lean",
+  "version": "0.1.0",
+  "description": "Same answer, smaller bill. Cuts the DeepSeek Harness (DSH) prompt prefix by 53% and one-shot session cost by 41%, measured. 同样的结果，更小的账单。",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./index.mjs"
+  },
+  "main": "index.mjs",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "files": [
+    "index.mjs",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh-CN.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "bench": "node scripts/run-bench.mjs bench/task-01",
+    "test": "node test/patch.test.mjs"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "dsh-plugins",
+    "deepseek-harness",
+    "deepseek",
+    "agent-preset",
+    "token-cost",
+    "prompt-cache",
+    "cost-optimization",
+    "llm"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sjh9714/dsh-lean.git"
+  },
+  "homepage": "https://github.com/sjh9714/dsh-lean#readme",
+  "bugs": {
+    "url": "https://github.com/sjh9714/dsh-lean/issues"
+  }
+}

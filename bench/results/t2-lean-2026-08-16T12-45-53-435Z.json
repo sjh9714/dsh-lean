@@ -1,0 +1,61 @@
+{
+  "label": "t2-lean",
+  "task": "task-02",
+  "workspace": "/private/var/folders/kg/y4sm8cfd69xbbclmyhvqpkbc0000gn/T/dsh-bench-task-02-t2-lean-2026-08-16T12-45-29-489Z",
+  "patches": [
+    "/Users/sungjh/orca/projects/dsh3/cordis.patch.yml"
+  ],
+  "wallMs": 23802,
+  "dshExitCode": 0,
+  "verify": {
+    "pass": 16,
+    "fail": 0,
+    "ok": true
+  },
+  "requests": [
+    {
+      "turn": 1,
+      "step": 1,
+      "inputTokens": 4620,
+      "outputTokens": 185,
+      "cacheReadTokens": 0,
+      "reasoningTokens": 14
+    },
+    {
+      "turn": 1,
+      "step": 2,
+      "inputTokens": 1203,
+      "outputTokens": 2569,
+      "cacheReadTokens": 4736,
+      "reasoningTokens": 1913
+    },
+    {
+      "turn": 1,
+      "step": 3,
+      "inputTokens": 149,
+      "outputTokens": 63,
+      "cacheReadTokens": 8448,
+      "reasoningTokens": 0
+    },
+    {
+      "turn": 1,
+      "step": 4,
+      "inputTokens": 878,
+      "outputTokens": 163,
+      "cacheReadTokens": 8576,
+      "reasoningTokens": 8
+    }
+  ],
+  "total": {
+    "inputTokens": 6850,
+    "cacheReadTokens": 21760,
+    "outputTokens": 2980,
+    "reasoningTokens": 1935
+  },
+  "prefix": {
+    "toolCount": 12,
+    "toolChars": 12452,
+    "systemChars": 1878
+  },
+  "costUsd": 0.0018543280000000001
+}

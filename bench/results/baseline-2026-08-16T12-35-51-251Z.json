@@ -1,0 +1,83 @@
+{
+  "label": "baseline",
+  "task": "task-01",
+  "workspace": "/private/var/folders/kg/y4sm8cfd69xbbclmyhvqpkbc0000gn/T/dsh-bench-task-01-baseline-2026-08-16T12-35-35-322Z",
+  "patches": [],
+  "wallMs": 15727,
+  "dshExitCode": 0,
+  "verify": {
+    "pass": 9,
+    "fail": 0,
+    "ok": true
+  },
+  "requests": [
+    {
+      "turn": 1,
+      "step": 1,
+      "inputTokens": 8246,
+      "outputTokens": 168,
+      "cacheReadTokens": 0,
+      "reasoningTokens": 18
+    },
+    {
+      "turn": 1,
+      "step": 2,
+      "inputTokens": 407,
+      "outputTokens": 67,
+      "cacheReadTokens": 8320,
+      "reasoningTokens": 0
+    },
+    {
+      "turn": 1,
+      "step": 3,
+      "inputTokens": 258,
+      "outputTokens": 185,
+      "cacheReadTokens": 8704,
+      "reasoningTokens": 0
+    },
+    {
+      "turn": 1,
+      "step": 4,
+      "inputTokens": 948,
+      "outputTokens": 237,
+      "cacheReadTokens": 9088,
+      "reasoningTokens": 161
+    },
+    {
+      "turn": 1,
+      "step": 5,
+      "inputTokens": 1583,
+      "outputTokens": 445,
+      "cacheReadTokens": 10240,
+      "reasoningTokens": 92
+    },
+    {
+      "turn": 1,
+      "step": 6,
+      "inputTokens": 181,
+      "outputTokens": 69,
+      "cacheReadTokens": 12160,
+      "reasoningTokens": 0
+    },
+    {
+      "turn": 1,
+      "step": 7,
+      "inputTokens": 619,
+      "outputTokens": 177,
+      "cacheReadTokens": 12288,
+      "reasoningTokens": 0
+    }
+  ],
+  "total": {
+    "inputTokens": 12242,
+    "cacheReadTokens": 60800,
+    "outputTokens": 1348,
+    "reasoningTokens": 271
+  },
+  "prefix": {
+    "toolCount": 25,
+    "toolChars": 26182,
+    "systemChars": 4132
+  },
+  "costUsd": 0.0022615600000000006
+}

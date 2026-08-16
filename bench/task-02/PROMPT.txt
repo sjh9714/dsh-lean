@@ -1,0 +1,1 @@
+The test suite in test/csv.test.js describes a CSV module that does not exist yet. Create src/csv.js exporting parseCsv and formatCsv so that `npm test` passes all sixteen tests. Do not edit any file under test/.

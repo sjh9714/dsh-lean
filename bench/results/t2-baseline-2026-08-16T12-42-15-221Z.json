@@ -1,0 +1,59 @@
+{
+  "label": "t2-baseline",
+  "task": "task-02",
+  "workspace": "/private/var/folders/kg/y4sm8cfd69xbbclmyhvqpkbc0000gn/T/dsh-bench-task-02-t2-baseline-2026-08-16T12-41-43-813Z",
+  "patches": [],
+  "wallMs": 31265,
+  "dshExitCode": 0,
+  "verify": {
+    "pass": 16,
+    "fail": 0,
+    "ok": true
+  },
+  "requests": [
+    {
+      "turn": 1,
+      "step": 1,
+      "inputTokens": 8271,
+      "outputTokens": 174,
+      "cacheReadTokens": 0,
+      "reasoningTokens": 14
+    },
+    {
+      "turn": 1,
+      "step": 2,
+      "inputTokens": 1253,
+      "outputTokens": 3154,
+      "cacheReadTokens": 8320,
+      "reasoningTokens": 2442
+    },
+    {
+      "turn": 1,
+      "step": 3,
+      "inputTokens": 145,
+      "outputTokens": 63,
+      "cacheReadTokens": 12672,
+      "reasoningTokens": 0
+    },
+    {
+      "turn": 1,
+      "step": 4,
+      "inputTokens": 875,
+      "outputTokens": 188,
+      "cacheReadTokens": 12800,
+      "reasoningTokens": 8
+    }
+  ],
+  "total": {
+    "inputTokens": 10544,
+    "cacheReadTokens": 33792,
+    "outputTokens": 3579,
+    "reasoningTokens": 2464
+  },
+  "prefix": {
+    "toolCount": 25,
+    "toolChars": 26182,
+    "systemChars": 4135
+  },
+  "costUsd": 0.0025728976000000004
+}

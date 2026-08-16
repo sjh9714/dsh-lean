@@ -1,0 +1,1 @@
+Run `npm test`. Three tests fail. Fix the bugs in src/index.js so all nine tests pass. Do not edit any file under test/.

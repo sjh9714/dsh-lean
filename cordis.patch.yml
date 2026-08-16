@@ -1,0 +1,40 @@
+# dsh-lean: turn off the tool rows a single-agent coding session never calls.
+#
+# Why this saves money. DeepSeek bills a cache-miss input token at 50x the
+# cache-hit rate ($0.14 vs $0.0028 per 1M for deepseek-v4-flash, read from
+# https://api-docs.deepseek.com/quick_start/pricing on 2026-08-16). The first
+# request of every session pays the whole prompt prefix at the miss rate, and
+# that prefix is dominated by tool schemas. Measured against dsh 0.1.0-rc.6 the
+# default prefix is 25 tools and 31,144 characters; this patch takes it to
+# 12 tools and 14,728 characters.
+#
+# Only tool rows are disabled. The services behind them stay mounted, so
+# anything that injects them still resolves. Disabling a tool row also drops the
+# prose paragraph the system prompt generates for that tool, which is why the
+# system prompt shrinks from 4,100 to 1,853 characters as well.
+#
+# Do NOT use this preset if you rely on subagents, workflows, the goal system,
+# background jobs, or the ralph loop. Those are exactly what it removes.
+
+- id: tool-workflow
+  disabled: true
+
+- id: tool-subagent
+  disabled: true
+- id: tool-subagent-fork
+  disabled: true
+- id: tool-subagent-control
+  disabled: true
+- id: tool-subagent-list-agents
+  disabled: true
+- id: tool-subagent-report
+  disabled: true
+
+- id: tool-goal
+  disabled: true
+
+- id: tool-jobs
+  disabled: true
+
+- id: tool-ralph
+  disabled: true

@@ -1,0 +1,63 @@
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
+import { readFileSync, existsSync, readdirSync } from 'node:fs'
+import { join, resolve } from 'node:path'
+import { homedir } from 'node:os'
+
+const ROOT = resolve(import.meta.dirname, '..')
+
+// The patch is a flat list of `- id: <row>` / `disabled: true` pairs, so a regex
+// reads it without pulling in a YAML dependency for six lines of grammar.
+function disabledIds(yamlText) {
+  const ids = []
+  const lines = yamlText.split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    const id = /^- id:\s*(\S+)/.exec(lines[i])?.[1]
+    if (!id) continue
+    if (/^\s+disabled:\s*true\s*$/.test(lines[i + 1] ?? '')) ids.push(id)
+  }
+  return ids
+}
+
+const EXPECTED = [
+  'tool-workflow',
+  'tool-subagent',
+  'tool-subagent-fork',
+  'tool-subagent-control',
+  'tool-subagent-list-agents',
+  'tool-subagent-report',
+  'tool-goal',
+  'tool-jobs',
+  'tool-ralph',
+]
+
+test('the patch disables exactly the documented tool rows', () => {
+  const ids = disabledIds(readFileSync(join(ROOT, 'cordis.patch.yml'), 'utf8'))
+  assert.deepEqual(ids.sort(), [...EXPECTED].sort())
+})
+
+// The real failure mode is silent: if dsh renames or removes one of these rows,
+// the patch keeps parsing and simply stops saving anything. This check turns
+// that into a visible failure whenever a dsh install is reachable.
+function findBasePatch() {
+  const candidates = []
+  const npx = join(homedir(), '.npm/_npx')
+  if (existsSync(npx)) {
+    for (const dir of readdirSync(npx)) {
+      candidates.push(join(npx, dir, 'node_modules/@deepseek-ai/dsh-base/cordis.patch.yml'))
+    }
+  }
+  candidates.push(join(ROOT, 'node_modules/@deepseek-ai/dsh-base/cordis.patch.yml'))
+  return candidates.find((p) => existsSync(p))
+}
+
+test('every disabled row still exists in the installed dsh-base bundle', (t) => {
+  const basePatch = findBasePatch()
+  if (!basePatch) {
+    t.skip('no @deepseek-ai/dsh-base install found to check against')
+    return
+  }
+  const base = readFileSync(basePatch, 'utf8')
+  const missing = EXPECTED.filter((id) => !new RegExp(`^\\s*- id:\\s*${id}\\s*$`, 'm').test(base))
+  assert.deepEqual(missing, [], `rows no longer present in dsh-base: ${missing.join(', ')}`)
+})
