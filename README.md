@@ -9,10 +9,12 @@ English | [简体中文](./README.zh-CN.md)
 [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
 ```sh
-dsh plugin --profile web add dsh-lean
+npx dsh-lean audit          # see where your own tokens went, installs nothing
 ```
 
 **Same answer, smaller bill.** A DeepSeek Harness preset that removes the tool schemas a single-agent coding session never calls, cutting the prompt prefix by 53% and the cost of a session by 18% to 42%.
+
+Start with the audit. It reads a session log dsh already wrote, shows the cache-hit split of every request, ranks the tool schemas in your own prefix, and tells you what this preset would have saved on that exact session. Nothing is installed and nothing leaves your machine.
 
 Every number below came out of the DeepSeek API's own usage accounting, and the harness that produced them is in this repository.
 
@@ -96,7 +98,7 @@ node scripts/summarize.mjs
 
 Each run copies the task to a fresh workspace, runs it through `dsh --profile headless`, verifies the deliverable with the task's own `npm test`, then reads the token counts back out of the session log. Raw results for every run in the table are committed under `bench/results/`.
 
-`scripts/analyze-session.mjs <workspace>` prints the same breakdown for any dsh session you already ran, including the per-request cache hit split and the largest tool schemas in your own prefix.
+`npx dsh-lean audit <workspace>` prints the same breakdown for any dsh session you already ran, and `npx dsh-lean audit --all` picks your most recent session anywhere.
 
 ## How the measurement works
 

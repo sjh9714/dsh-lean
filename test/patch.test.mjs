@@ -61,3 +61,14 @@ test('every disabled row still exists in the installed dsh-base bundle', (t) => 
   const missing = EXPECTED.filter((id) => !new RegExp(`^\\s*- id:\\s*${id}\\s*$`, 'm').test(base))
   assert.deepEqual(missing, [], `rows no longer present in dsh-base: ${missing.join(', ')}`)
 })
+
+// dsh appends to session.jsonl.zstd one frame at a time, and node's
+// zstdDecompressSync stops after the first frame. The audit CLI splits on the
+// frame magic to read all of them, so this guards the case that broke.
+test('the audit decoder reads every frame of a multi-frame zstd file', async () => {
+  const { zstdCompressSync } = await import('node:zlib')
+  const { decodeZstdFrames } = await import('../bin/dsh-lean.mjs')
+  const parts = ['{"a":1}\n', '{"b":2}\n', '{"c":3}\n']
+  const multi = Buffer.concat(parts.map((p) => zstdCompressSync(Buffer.from(p))))
+  assert.equal(decodeZstdFrames(multi), parts.join(''))
+})

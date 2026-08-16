@@ -9,10 +9,12 @@
 [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
 ```sh
-dsh plugin --profile web add dsh-lean
+npx dsh-lean audit          # 先看你自己的 token 花在哪了，什么都不用装
 ```
 
 **同样的结果，更小的账单。** 一个 DeepSeek Harness preset，关掉单智能体编码会话根本用不到的工具，把提示词前缀压掉 53%，整场会话省 18% 到 42%。
+
+先跑 audit。它读的是 dsh 本来就写好的会话日志，会列出每个请求的缓存命中拆分、你自己前缀里各个工具 schema 的大小排名，以及这个 preset 在那一场会话上本来能省多少。什么都不装，也没有任何数据离开你的机器。
 
 下面每个数字都来自 DeepSeek API 自己返回的用量统计，产出这些数字的测量脚本就在本仓库里。
 
@@ -96,7 +98,7 @@ node scripts/summarize.mjs
 
 每次运行都会把任务复制到一个全新的工作目录，走 `dsh --profile headless` 跑一遍，用任务自带的 `npm test` 验交付物，然后从 session 日志里把 token 数读回来。表格里每一次运行的原始结果都提交在 `bench/results/` 下。
 
-`scripts/analyze-session.mjs <工作目录>` 可以对你已经跑过的任意 dsh 会话打印同样的拆解，包括逐请求的缓存命中拆分，以及你自己前缀里最大的那几个工具 schema。
+`npx dsh-lean audit <工作目录>` 可以对你已经跑过的任意 dsh 会话打印同样的拆解，`npx dsh-lean audit --all` 则直接挑你最近的一次会话。
 
 ## 测量是怎么做的
 
