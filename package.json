@@ -1,6 +1,6 @@
 {
   "name": "dsh-lean",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Same answer, smaller bill. Audit where your DeepSeek Harness (DSH) tokens go with one command, then cut session cost 18-42%. 同样的结果，更小的账单。",
   "license": "MIT",
   "type": "module",
