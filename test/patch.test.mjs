@@ -67,7 +67,7 @@ test('every disabled row still exists in the installed dsh-base bundle', (t) => 
 // frame magic to read all of them, so this guards the case that broke.
 test('the audit decoder reads every frame of a multi-frame zstd file', async () => {
   const { zstdCompressSync } = await import('node:zlib')
-  const { decodeZstdFrames } = await import('../bin/dsh-lean.mjs')
+  const { decodeZstdFrames } = await import('../lib/zstd-frames.mjs')
   const parts = ['{"a":1}\n', '{"b":2}\n', '{"c":3}\n']
   const multi = Buffer.concat(parts.map((p) => zstdCompressSync(Buffer.from(p))))
   assert.equal(decodeZstdFrames(multi), parts.join(''))
