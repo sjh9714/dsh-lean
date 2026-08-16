@@ -1,0 +1,79 @@
+{
+  "label": "pro-baseline",
+  "task": "task-01",
+  "workspace": "/private/var/folders/kg/y4sm8cfd69xbbclmyhvqpkbc0000gn/T/dsh-bench-task-01-pro-baseline-2026-08-16T13-29-13-563Z",
+  "patches": [
+    "/tmp/pro.patch.yml"
+  ],
+  "wallMs": 19344,
+  "dshExitCode": 0,
+  "verify": {
+    "pass": 9,
+    "fail": 0,
+    "ok": true
+  },
+  "requests": [
+    {
+      "turn": 1,
+      "step": 1,
+      "inputTokens": 8247,
+      "outputTokens": 90,
+      "cacheReadTokens": 0,
+      "reasoningTokens": 15
+    },
+    {
+      "turn": 1,
+      "step": 2,
+      "inputTokens": 225,
+      "outputTokens": 94,
+      "cacheReadTokens": 8320,
+      "reasoningTokens": 0
+    },
+    {
+      "turn": 1,
+      "step": 3,
+      "inputTokens": 265,
+      "outputTokens": 187,
+      "cacheReadTokens": 8576,
+      "reasoningTokens": 0
+    },
+    {
+      "turn": 1,
+      "step": 4,
+      "inputTokens": 959,
+      "outputTokens": 652,
+      "cacheReadTokens": 8960,
+      "reasoningTokens": 219
+    },
+    {
+      "turn": 1,
+      "step": 5,
+      "inputTokens": 289,
+      "outputTokens": 62,
+      "cacheReadTokens": 10496,
+      "reasoningTokens": 0
+    },
+    {
+      "turn": 1,
+      "step": 6,
+      "inputTokens": 593,
+      "outputTokens": 179,
+      "cacheReadTokens": 10752,
+      "reasoningTokens": 0
+    }
+  ],
+  "total": {
+    "inputTokens": 10578,
+    "cacheReadTokens": 47104,
+    "outputTokens": 1264,
+    "reasoningTokens": 234
+  },
+  "model": "deepseek-v4-pro",
+  "prefix": {
+    "toolCount": 25,
+    "toolChars": 26182,
+    "systemChars": 4134
+  },
+  "pricedExactly": true,
+  "costUsd": 0.005871862000000001
+}

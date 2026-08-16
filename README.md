@@ -22,13 +22,16 @@ Every number below came out of the DeepSeek API's own usage accounting, and the 
 
 ## Measured
 
-dsh 0.1.0-rc.6, `deepseek-v4-flash`, measured 2026-08-16. Twenty runs, each starting from a clean copy of the task.
+dsh 0.1.0-rc.6, measured 2026-08-16. Twenty six runs, each starting from a clean copy of the task.
 
 | task | requests | default cost | dsh-lean cost | saved | same deliverable |
 |---|---|---|---|---|---|
 | one question, no edits | 3 | $0.001292 | $0.000755 | **42%** | no suite to run |
 | fix three failing tests | 6 | $0.002201 | $0.001671 | **24%** | yes, all 9 tests pass both ways |
 | implement a module from sixteen tests | 4 | $0.002622 | $0.002141 | **18%** | yes, all 16 tests pass both ways |
+| fix three failing tests, on `deepseek-v4-pro` | 6 | $0.006139 | $0.004906 | **20%** | yes, all 9 tests pass both ways |
+
+The first three rows are `deepseek-v4-flash`. The last is the same task on `deepseek-v4-pro`, where the percentage lands in the same range but the money does not. Pro saves $0.001233 a session against flash's $0.000530, so the same change is worth about 2.3x more to whoever is paying the higher rate.
 
 The savings column is the whole point, so the deliverable column is there to prove the cheaper run did not simply do less work. In every paired run the test suite ended green both ways.
 
@@ -78,7 +81,7 @@ Do not install it if you use subagents, workflows, the goal system, background j
 Two more honest limits.
 
 - **The saving shrinks as the session grows.** It removes a fixed amount, roughly 3,700 cache-miss tokens, from the front of each session. On a one-shot question that is 42% of the bill. On a long session it is a small share. Nothing here makes a two-hour session 42% cheaper.
-- **It was measured on `deepseek-v4-flash`.** The mechanism is provider-independent, but the percentages depend on the cache-hit to cache-miss price ratio, which differs per model.
+- **The percentage does not grow on the expensive model.** `deepseek-v4-pro` bills a cache miss at 120x a cache hit against flash's 50x, so the prefix looks like a bigger target, but pro also bills output at twice its miss rate. Output grows as a share of the bill and cancels most of the gain. Measured, pro saved 20% against flash's 24% on the same task. The absolute money saved is what changes, not the percentage.
 
 ## Reproduce it
 
@@ -96,6 +99,10 @@ cp ~/.dsh/.credentials.yaml "$DSH_HOME/"
 node scripts/run-bench.mjs bench/task-01                             # default
 node scripts/run-bench.mjs bench/task-01 --patch cordis.patch.yml    # dsh-lean
 node scripts/summarize.mjs
+
+# the v4-pro row, same tasks priced against a 120x cache ratio
+node scripts/run-bench.mjs bench/task-01 --patch bench/pro.patch.yml
+node scripts/run-bench.mjs bench/task-01 --patch bench/pro.patch.yml --patch cordis.patch.yml
 ```
 
 Each run copies the task to a fresh workspace, runs it through `dsh --profile headless`, verifies the deliverable with the task's own `npm test`, then reads the token counts back out of the session log. Raw results for every run in the table are committed under `bench/results/`.

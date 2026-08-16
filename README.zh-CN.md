@@ -22,13 +22,16 @@ npx dsh-lean audit          # 先看你自己的 token 花在哪了，什么都�
 
 ## 实测
 
-dsh 0.1.0-rc.6，`deepseek-v4-flash`，测于 2026-08-16。共 20 次运行，每次都从任务的干净副本开始。
+dsh 0.1.0-rc.6，测于 2026-08-16。共 26 次运行，每次都从任务的干净副本开始。
 
 | 任务 | 请求数 | 默认花费 | dsh-lean 花费 | 省下 | 交付物是否相同 |
 |---|---|---|---|---|---|
 | 一个问题，不改文件 | 3 | $0.001292 | $0.000755 | **42%** | 无测试可跑 |
 | 修好 3 个失败测试 | 6 | $0.002201 | $0.001671 | **24%** | 相同，两边 9 个测试全过 |
 | 按 16 个测试实现一个模块 | 4 | $0.002622 | $0.002141 | **18%** | 相同，两边 16 个测试全过 |
+| 修好 3 个失败测试，跑在 `deepseek-v4-pro` 上 | 6 | $0.006139 | $0.004906 | **20%** | 相同，两边 9 个测试全过 |
+
+前三行是 `deepseek-v4-flash`，最后一行是同一个任务跑在 `deepseek-v4-pro` 上。百分比落在同一区间，但钱不是。pro 每场省 $0.001233，flash 每场省 $0.000530，同样的改动对付高价的那批人值大约 2.3 倍。
 
 省钱是重点，所以"交付物"这一列必须在。它证明便宜下来不是因为少干了活。每一组配对运行里，测试套件两边都是绿的。
 
@@ -78,7 +81,7 @@ dsh plugin --profile web remove dsh-lean
 还有两条要说清楚的限制。
 
 - **会话越长，省得越少。** 它从每场会话开头砍掉的是一个固定量，大约 3,700 个未命中 token。对一次性提问来说这是账单的 42%，对长会话来说就只占一小部分。它不会让一场两小时的会话便宜 42%。
-- **测量基于 `deepseek-v4-flash`。** 机制本身与厂商无关，但百分比取决于缓存命中价与未命中价的比值，不同模型不一样。
+- **在贵的模型上百分比并不会更高。** `deepseek-v4-pro` 的缓存未命中是命中的 120 倍，flash 是 50 倍，所以前缀看起来是更大的靶子。但 pro 的输出单价也是它未命中价的两倍，输出在账单里的占比变大，把大部分好处抵消掉了。实测同一个任务，pro 省 20%，flash 省 24%。变的是省下的绝对金额，不是百分比。
 
 ## 自己复现
 
@@ -96,6 +99,10 @@ cp ~/.dsh/.credentials.yaml "$DSH_HOME/"
 node scripts/run-bench.mjs bench/task-01                             # 默认
 node scripts/run-bench.mjs bench/task-01 --patch cordis.patch.yml    # dsh-lean
 node scripts/summarize.mjs
+
+# v4-pro 那一行，同样的任务按 120 倍缓存比价
+node scripts/run-bench.mjs bench/task-01 --patch bench/pro.patch.yml
+node scripts/run-bench.mjs bench/task-01 --patch bench/pro.patch.yml --patch cordis.patch.yml
 ```
 
 每次运行都会把任务复制到一个全新的工作目录，走 `dsh --profile headless` 跑一遍，用任务自带的 `npm test` 验交付物，然后从 session 日志里把 token 数读回来。表格里每一次运行的原始结果都提交在 `bench/results/` 下。

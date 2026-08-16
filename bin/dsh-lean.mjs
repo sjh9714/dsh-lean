@@ -13,13 +13,10 @@ import { join, resolve, basename } from 'node:path'
 import { homedir } from 'node:os'
 import { execFileSync } from 'node:child_process'
 import { decodeZstdFrames } from '../lib/zstd-frames.mjs'
+import { costUsd, priceFor } from '../lib/pricing.mjs'
 
 const DSH_HOME = process.env.DSH_HOME ?? join(homedir(), '.dsh')
 const SESSIONS = join(DSH_HOME, 'sessions')
-
-// deepseek-v4-flash, USD per 1M tokens, from
-// https://api-docs.deepseek.com/quick_start/pricing read 2026-08-16.
-const PRICE = { miss: 0.14, hit: 0.0028, out: 0.28 }
 
 // The tool rows dsh-lean turns off, and the tool names they contribute.
 const REMOVES = new Set([
@@ -149,7 +146,12 @@ function main() {
   }
 
   const prompt = r.total.miss + r.total.hit
-  const cost = (r.total.miss * PRICE.miss + r.total.hit * PRICE.hit + r.total.out * PRICE.out) / 1e6
+  const { usd: cost, exact } = costUsd(
+    { inputTokens: r.total.miss, cacheReadTokens: r.total.hit, outputTokens: r.total.out },
+    r.model,
+  )
+  const { price } = priceFor(r.model)
+  const ratio = Math.round(price.cacheMissIn / price.cacheHitIn)
   const prefixChars = r.systemChars + r.toolChars
 
   console.log()
@@ -167,9 +169,9 @@ function main() {
   console.log(`  requests           ${r.requests.length}`)
   console.log(`  prompt tokens      ${n(prompt)}`)
   console.log(`  cache hit rate     ${((r.total.hit / prompt) * 100).toFixed(1)}%`)
-  console.log(`  cache-miss tokens  ${n(r.total.miss)}   <- billed at 50x the cache-hit rate`)
+  console.log(`  cache-miss tokens  ${n(r.total.miss)}   <- billed at ${ratio}x the cache-hit rate`)
   console.log(`  output tokens      ${n(r.total.out)}`)
-  console.log(`  cost               ${usd(cost)}`)
+  console.log(`  cost               ${usd(cost)}${exact ? '' : '   (priced with v4-flash rates, model not in the table)'}`)
 
   if (!prefixChars) {
     console.log()
@@ -204,7 +206,7 @@ function main() {
   const firstMiss = r.requests[0].inputTokens ?? 0
   const share = removedChars / prefixChars
   const tokensSaved = Math.round(firstMiss * share)
-  const saved = (tokensSaved * PRICE.miss) / 1e6
+  const saved = (tokensSaved * price.cacheMissIn) / 1e6
 
   console.log(`  dsh-lean would remove ${removable.length} of your ${r.tools.length} tools`)
   console.log(`    ${n(removedChars)} of ${n(prefixChars)} prefix chars  (${(share * 100).toFixed(1)}%)`)

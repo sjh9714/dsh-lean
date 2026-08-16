@@ -14,9 +14,10 @@ const REPO = resolve(import.meta.dirname, '..')
 const DIR = join(REPO, 'bench/results')
 
 const GROUPS = [
-  { key: 'q', task: 'task-00-question', title: 'one question, no edits' },
-  { key: 't1', task: 'task-01', title: 'fix three failing tests' },
-  { key: 't2', task: 'task-02', title: 'implement a module from sixteen tests' },
+  { task: 'task-00-question', model: 'deepseek-v4-flash', title: 'one question, no edits' },
+  { task: 'task-01', model: 'deepseek-v4-flash', title: 'fix three failing tests' },
+  { task: 'task-02', model: 'deepseek-v4-flash', title: 'implement a module from sixteen tests' },
+  { task: 'task-01', model: 'deepseek-v4-pro', title: 'fix three failing tests, on v4-pro' },
 ]
 
 function load() {
@@ -33,10 +34,13 @@ const mean = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : Na
 // installed bundle, and only the measured prefix distinguishes the two arms.
 const DEFAULT_TOOLS = 25
 
-function arm(runs, task, kind) {
+function arm(runs, task, model, kind) {
   const hit = runs.filter(
     (r) =>
       r.task === task &&
+      // Runs recorded before pricing became model-aware carry no model field, and
+      // every one of those was on flash.
+      (r.model ?? 'deepseek-v4-flash') === model &&
       (kind === 'lean' ? r.prefix.toolCount < DEFAULT_TOOLS : r.prefix.toolCount === DEFAULT_TOOLS),
   )
   return {
@@ -59,8 +63,8 @@ function main() {
   const rows = []
 
   for (const g of GROUPS) {
-    const b = arm(runs, g.task, 'baseline')
-    const l = arm(runs, g.task, 'lean')
+    const b = arm(runs, g.task, g.model, 'baseline')
+    const l = arm(runs, g.task, g.model, 'lean')
     if (!b.n || !l.n) continue
     rows.push({ g, b, l, saving: (1 - l.cost / b.cost) * 100 })
   }
@@ -78,7 +82,7 @@ function main() {
   }
 
   for (const { g, b, l, saving } of rows) {
-    console.log(`${g.task}  ${g.title}`)
+    console.log(`${g.task}  ${g.title}  [${g.model}]`)
     console.log(`  runs            baseline n=${b.n}, lean n=${l.n}`)
     console.log(`  tools in prefix ${b.tools} -> ${l.tools}`)
     console.log(`  requests        ${b.requests.toFixed(1)} -> ${l.requests.toFixed(1)}`)
@@ -86,7 +90,7 @@ function main() {
     console.log(`  prompt tokens   ${b.prompt.toFixed(0)} -> ${l.prompt.toFixed(0)}  (${((1 - l.prompt / b.prompt) * 100).toFixed(1)}%)`)
     console.log(`  output tokens   ${b.output.toFixed(0)} -> ${l.output.toFixed(0)}`)
     console.log(`  wall clock      ${b.wall.toFixed(1)}s -> ${l.wall.toFixed(1)}s`)
-    console.log(`  cost            $${b.cost.toFixed(6)} -> $${l.cost.toFixed(6)}  (${saving.toFixed(1)}%)`)
+    console.log(`  cost            $${b.cost.toFixed(6)} -> $${l.cost.toFixed(6)}  (${saving.toFixed(1)}%, $${(b.cost - l.cost).toFixed(6)} per session)`)
     console.log(`  deliverable     ${b.verifiable ? (b.allVerified && l.allVerified ? 'identical, all tests pass in every run' : 'MISMATCH') : 'task ships no suite'}`)
     console.log()
   }

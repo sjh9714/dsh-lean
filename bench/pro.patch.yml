@@ -1,0 +1,6 @@
+# Benchmark overlay only, not shipped. Points the default model at v4-pro so the
+# same tasks can be priced against a 120x cache ratio instead of 50x.
+- id: agent-default-model
+  config:
+    provider: deepseek-official
+    model: deepseek-v4-pro

@@ -13,6 +13,7 @@ import { execFileSync, spawnSync } from 'node:child_process'
 import { cpSync, mkdirSync, writeFileSync, existsSync, readdirSync, statSync, realpathSync } from 'node:fs'
 import { join, resolve, basename } from 'node:path'
 import { tmpdir } from 'node:os'
+import { costUsd } from '../lib/pricing.mjs'
 
 const REPO = resolve(import.meta.dirname, '..')
 
@@ -88,6 +89,7 @@ function readUsage(sessionFile) {
   return {
     requests,
     total,
+    model: firstHeader?.config?.model ?? null,
     prefix: {
       toolCount: (firstHeader?.tools ?? []).length,
       toolChars,
@@ -96,20 +98,6 @@ function readUsage(sessionFile) {
   }
 }
 
-// deepseek-v4-flash, USD per 1M tokens, read from
-// https://api-docs.deepseek.com/quick_start/pricing on 2026-08-16.
-// Cache hits are 50x cheaper than misses, which is why cache behavior dominates
-// the bill far more than prompt size does.
-const PRICE = { cacheMissIn: 0.14, cacheHitIn: 0.0028, out: 0.28 }
-
-function costUsd(total) {
-  return (
-    (total.inputTokens * PRICE.cacheMissIn +
-      total.cacheReadTokens * PRICE.cacheHitIn +
-      total.outputTokens * PRICE.out) /
-    1e6
-  )
-}
 
 function main() {
   const { task, patches, label } = parseArgs(process.argv.slice(2))
@@ -152,7 +140,7 @@ function main() {
   }
 
   const usage = readUsage(newestSessionFile(sessionDirForCwd(dshHome, ws)))
-  const cost = costUsd(usage.total)
+  const { usd: cost, exact: pricedExactly } = costUsd(usage.total, usage.model)
   const billedPrompt = usage.total.inputTokens + usage.total.cacheReadTokens
 
   const result = {
@@ -164,6 +152,8 @@ function main() {
     dshExitCode: run.status,
     verify: verifiable ? { pass, fail, ok: fail === 0 && pass > 0 } : { skipped: true },
     ...usage,
+    model: usage.model,
+    pricedExactly,
     costUsd: cost,
   }
 
@@ -180,6 +170,7 @@ function main() {
   console.log(`output            ${usage.total.outputTokens}`)
   console.log(`tools in prefix   ${usage.prefix.toolCount} tools, ${usage.prefix.toolChars} chars`)
   console.log(`wall clock        ${(wallMs / 1000).toFixed(1)}s`)
+  console.log(`model             ${usage.model ?? 'unknown'}${pricedExactly ? '' : '  (priced with v4-flash rates)'}`)
   console.log(`cost              $${cost.toFixed(6)}`)
   console.log(
     verifiable
