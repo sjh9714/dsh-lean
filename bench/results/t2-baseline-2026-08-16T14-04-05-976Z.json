@@ -1,0 +1,61 @@
+{
+  "label": "t2-baseline",
+  "task": "task-02",
+  "workspace": "/private/var/folders/kg/y4sm8cfd69xbbclmyhvqpkbc0000gn/T/dsh-bench-task-02-t2-baseline-2026-08-16T14-03-53-786Z",
+  "patches": [],
+  "wallMs": 12050,
+  "dshExitCode": 0,
+  "verify": {
+    "pass": 16,
+    "fail": 0,
+    "ok": true
+  },
+  "requests": [
+    {
+      "turn": 1,
+      "step": 1,
+      "inputTokens": 8271,
+      "outputTokens": 117,
+      "cacheReadTokens": 0,
+      "reasoningTokens": 14
+    },
+    {
+      "turn": 1,
+      "step": 2,
+      "inputTokens": 1017,
+      "outputTokens": 787,
+      "cacheReadTokens": 8320,
+      "reasoningTokens": 123
+    },
+    {
+      "turn": 1,
+      "step": 3,
+      "inputTokens": 102,
+      "outputTokens": 80,
+      "cacheReadTokens": 10112,
+      "reasoningTokens": 7
+    },
+    {
+      "turn": 1,
+      "step": 4,
+      "inputTokens": 263,
+      "outputTokens": 149,
+      "cacheReadTokens": 10240,
+      "reasoningTokens": 20
+    }
+  ],
+  "total": {
+    "inputTokens": 9653,
+    "cacheReadTokens": 28672,
+    "outputTokens": 1133,
+    "reasoningTokens": 164
+  },
+  "model": "deepseek-v4-flash",
+  "prefix": {
+    "toolCount": 25,
+    "toolChars": 26182,
+    "systemChars": 4135
+  },
+  "pricedExactly": true,
+  "costUsd": 0.0017489416000000002
+}

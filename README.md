@@ -4,8 +4,8 @@ English | [简体中文](./README.zh-CN.md)
 
 [![npm](https://img.shields.io/npm/v/dsh-lean)](https://www.npmjs.com/package/dsh-lean)
 [![prefix](https://img.shields.io/badge/prompt_prefix-53%25_smaller-brightgreen)](#measured)
-[![cost](https://img.shields.io/badge/session_cost-18--42%25_lower-brightgreen)](#measured)
-[![runs](https://img.shields.io/badge/measured_over-20_runs-blue)](#reproduce-it)
+[![cost](https://img.shields.io/badge/session_cost-7--42%25_lower-brightgreen)](#measured)
+[![runs](https://img.shields.io/badge/measured_over-32_runs-blue)](#reproduce-it)
 [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
 ```sh
@@ -14,7 +14,7 @@ npx dsh-lean audit          # see where your own tokens went, installs nothing
 
 <img src="assets/audit.svg" alt="npx dsh-lean audit output, showing the per-request cache split, the largest tool schemas in the prefix, and what dsh-lean would remove" width="100%">
 
-**Same answer, smaller bill.** A DeepSeek Harness preset that removes the tool schemas a single-agent coding session never calls, cutting the prompt prefix by 53% and the cost of a session by 18% to 42%.
+**Same answer, smaller bill.** A DeepSeek Harness preset that removes the tool schemas a single-agent coding session never calls, cutting the prompt prefix by 53%. What that is worth ranges from 7% to 42% of a session bill, measured.
 
 Start with the audit. It reads a session log dsh already wrote, shows the cache-hit split of every request, ranks the tool schemas in your own prefix, and tells you what this preset would have saved on that exact session. Nothing is installed and nothing leaves your machine.
 
@@ -22,29 +22,35 @@ Every number below came out of the DeepSeek API's own usage accounting, and the 
 
 ## Measured
 
-dsh 0.1.0-rc.6, measured 2026-08-16. Twenty six runs, each starting from a clean copy of the task.
+dsh 0.1.0-rc.6, measured 2026-08-16. Thirty two runs, each starting from a clean copy of the task.
 
-| task | requests | default cost | dsh-lean cost | saved | same deliverable |
-|---|---|---|---|---|---|
-| one question, no edits | 3 | $0.001292 | $0.000755 | **42%** | no suite to run |
-| fix three failing tests | 6 | $0.002201 | $0.001671 | **24%** | yes, all 9 tests pass both ways |
-| implement a module from sixteen tests | 4 | $0.002622 | $0.002141 | **18%** | yes, all 16 tests pass both ways |
-| fix three failing tests, on `deepseek-v4-pro` | 6 | $0.006139 | $0.004906 | **20%** | yes, all 9 tests pass both ways |
+The prefix reduction is deterministic. The money is not, so both are reported.
 
-The first three rows are `deepseek-v4-flash`. The last is the same task on `deepseek-v4-pro`, where the percentage lands in the same range but the money does not. Pro saves $0.001233 a session against flash's $0.000530, so the same change is worth about 2.3x more to whoever is paying the higher rate.
+| task | runs per arm | cache-miss tokens | session cost | same deliverable |
+|---|---|---|---|---|
+| one question, no edits | 3 | 8,600 to 4,912  **-43%** | $0.001292 to $0.000755  **-42%** | no suite to run |
+| fix three failing tests | 3 | 11,538 to 8,225  **-29%** | $0.002201 to $0.001671  **-24%** | yes, all 9 tests pass both ways |
+| implement a module from sixteen tests | 7 | 10,376 to 7,470  **-28%** | $0.002542 to $0.002373  **-7%** | yes, all 16 tests pass both ways |
+| fix three failing tests, on `deepseek-v4-pro` | 3 | 10,949 to 8,507  **-22%** | $0.006139 to $0.004906  **-20%** | yes, all 9 tests pass both ways |
 
-The savings column is the whole point, so the deliverable column is there to prove the cheaper run did not simply do less work. In every paired run the test suite ended green both ways.
+**Read the third row before the first one.** Cache-miss tokens fall by 22% to 43% on every task, which is the part this patch controls directly. Turning that into money is not reliable. On the implementation task the leaner agent took more steps, 4.4 requests against 5.4, and produced 24% more output, which ate most of the saving. Its per-run cost ranges overlap, $0.001749 to $0.002996 for the default against $0.001854 to $0.003034 for dsh-lean, so on that task a dsh-lean run can cost more than a default run. It is in the table because it is the honest floor. An earlier version of this page published 18% for that row from four runs per arm, and seven runs per arm moved it to 7%.
 
-Prefix sent on the first request of a session.
+The other three rows have ranges that do separate. `node scripts/summarize.mjs` prints n and the per-run range for every row, so this page cannot quote a mean without its spread.
+
+The deliverable column is the load-bearing one. It is there to show the cheaper run did not simply do less work, and in every paired run the task's own test suite ended green on both sides.
+
+Prefix sent on the first request of a session. These are the numbers `npx dsh-lean audit` prints and every committed run records.
 
 | | tools | system prompt | tool schemas | total |
 |---|---|---|---|---|
-| default | 25 | 4,100 chars | 27,044 chars | 31,144 chars |
-| dsh-lean | 12 | 1,853 chars | 12,875 chars | **14,728 chars** |
+| default | 25 | 4,100 chars | 26,182 chars | 30,282 chars |
+| dsh-lean | 12 | 1,853 chars | 12,452 chars | **14,305 chars** |
 
 ## Why this saves money
 
-DeepSeek bills a cache-miss input token at **50x** the cache-hit rate, $0.14 against $0.0028 per million for `deepseek-v4-flash` ([pricing](https://api-docs.deepseek.com/quick_start/pricing), read 2026-08-16).
+DeepSeek bills a cache-miss input token at **50x** the cache-hit rate, $0.14 against $0.0028 per million for `deepseek-v4-flash`. That is the flat card, read from [the pricing page](https://api-docs.deepseek.com/quick_start/pricing) on 2026-08-16 before the 16:00 UTC repricing, and every run above was measured under it.
+
+**The card changed the same day.** DeepSeek moved to peak and off-peak billing at 2026-08-16 16:00 UTC, and the tiers did not move together. Reconciled against a billing console in [deepseek-harness#2064](https://github.com/deepseek-ai/deepseek-harness/discussions/2064), `deepseek-v4-pro` cache hits went from $0.003625 to $0.022 while cache misses went from $0.435 to $0.66, so its miss to hit ratio collapses from 120x to 30x. Repricing the committed `v4-pro` runs under that new card moves the saving from 20.1% to **19.8%**, while the absolute money saved rises from $0.001233 to **$0.002176** a session, because cache reads become 9.9% of the bill instead of 2.9% and this patch shrinks those too. The mechanism survives the repricing. The `v4-flash` figures under the new card are not verified here.
 
 The first request of every session pays the entire prompt prefix at the miss rate. On the six-request task above it was **52% of the whole bill**, averaged over three runs, and it was the same 8,246 tokens every time. From the second request on, the prefix is a cache hit and costs almost nothing.
 
@@ -92,7 +98,7 @@ Do not install it if you use subagents, workflows, the goal system, background j
 
 Two more honest limits.
 
-- **The saving shrinks as the session grows.** It removes a fixed amount, roughly 3,700 cache-miss tokens, from the front of each session. On a one-shot question that is 42% of the bill. On a long session it is a small share. Nothing here makes a two-hour session 42% cheaper.
+- **The saving is diluted by output, not by session length.** It removes a fixed amount, roughly 3,700 cache-miss tokens, from the front of each session, and whatever else the session spends dilutes that. Output is the biggest diluter, billed at twice the cache-miss rate. The 3-request question saves 42% and the 4-request implementation task saves 7%, so request count is not the variable, output volume is.
 - **The percentage does not grow on the expensive model.** `deepseek-v4-pro` bills a cache miss at 120x a cache hit against flash's 50x, so the prefix looks like a bigger target, but pro also bills output at twice its miss rate. Output grows as a share of the bill and cancels most of the gain. Measured, pro saved 20% against flash's 24% on the same task. The absolute money saved is what changes, not the percentage.
 
 ## Reproduce it

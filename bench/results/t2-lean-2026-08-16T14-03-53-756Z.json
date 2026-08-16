@@ -1,0 +1,79 @@
+{
+  "label": "t2-lean",
+  "task": "task-02",
+  "workspace": "/private/var/folders/kg/y4sm8cfd69xbbclmyhvqpkbc0000gn/T/dsh-bench-task-02-t2-lean-2026-08-16T14-03-16-618Z",
+  "patches": [
+    "/Users/sungjh/orca/projects/dsh3/cordis.patch.yml"
+  ],
+  "wallMs": 36988,
+  "dshExitCode": 0,
+  "verify": {
+    "pass": 16,
+    "fail": 0,
+    "ok": true
+  },
+  "requests": [
+    {
+      "turn": 1,
+      "step": 1,
+      "inputTokens": 4620,
+      "outputTokens": 177,
+      "cacheReadTokens": 0,
+      "reasoningTokens": 14
+    },
+    {
+      "turn": 1,
+      "step": 2,
+      "inputTokens": 1188,
+      "outputTokens": 3390,
+      "cacheReadTokens": 4736,
+      "reasoningTokens": 2782
+    },
+    {
+      "turn": 1,
+      "step": 3,
+      "inputTokens": 187,
+      "outputTokens": 68,
+      "cacheReadTokens": 9216,
+      "reasoningTokens": 5
+    },
+    {
+      "turn": 1,
+      "step": 4,
+      "inputTokens": 1288,
+      "outputTokens": 822,
+      "cacheReadTokens": 9344,
+      "reasoningTokens": 437
+    },
+    {
+      "turn": 1,
+      "step": 5,
+      "inputTokens": 137,
+      "outputTokens": 64,
+      "cacheReadTokens": 11392,
+      "reasoningTokens": 0
+    },
+    {
+      "turn": 1,
+      "step": 6,
+      "inputTokens": 868,
+      "outputTokens": 174,
+      "cacheReadTokens": 11520,
+      "reasoningTokens": 29
+    }
+  ],
+  "total": {
+    "inputTokens": 8288,
+    "cacheReadTokens": 46208,
+    "outputTokens": 4695,
+    "reasoningTokens": 3267
+  },
+  "model": "deepseek-v4-flash",
+  "prefix": {
+    "toolCount": 12,
+    "toolChars": 12452,
+    "systemChars": 1878
+  },
+  "pricedExactly": true,
+  "costUsd": 0.0026043024000000003
+}

@@ -1,0 +1,119 @@
+{
+  "label": "t2-lean",
+  "task": "task-02",
+  "workspace": "/private/var/folders/kg/y4sm8cfd69xbbclmyhvqpkbc0000gn/T/dsh-bench-task-02-t2-lean-2026-08-16T14-02-01-152Z",
+  "patches": [
+    "/Users/sungjh/orca/projects/dsh3/cordis.patch.yml"
+  ],
+  "wallMs": 42190,
+  "dshExitCode": 0,
+  "verify": {
+    "pass": 16,
+    "fail": 0,
+    "ok": true
+  },
+  "requests": [
+    {
+      "turn": 1,
+      "step": 1,
+      "inputTokens": 4620,
+      "outputTokens": 177,
+      "cacheReadTokens": 0,
+      "reasoningTokens": 14
+    },
+    {
+      "turn": 1,
+      "step": 2,
+      "inputTokens": 1188,
+      "outputTokens": 2685,
+      "cacheReadTokens": 4736,
+      "reasoningTokens": 2047
+    },
+    {
+      "turn": 1,
+      "step": 3,
+      "inputTokens": 122,
+      "outputTokens": 203,
+      "cacheReadTokens": 8576,
+      "reasoningTokens": 28
+    },
+    {
+      "turn": 1,
+      "step": 4,
+      "inputTokens": 90,
+      "outputTokens": 210,
+      "cacheReadTokens": 8832,
+      "reasoningTokens": 34
+    },
+    {
+      "turn": 1,
+      "step": 5,
+      "inputTokens": 123,
+      "outputTokens": 117,
+      "cacheReadTokens": 9088,
+      "reasoningTokens": 0
+    },
+    {
+      "turn": 1,
+      "step": 6,
+      "inputTokens": 377,
+      "outputTokens": 109,
+      "cacheReadTokens": 9216,
+      "reasoningTokens": 34
+    },
+    {
+      "turn": 1,
+      "step": 7,
+      "inputTokens": 1267,
+      "outputTokens": 885,
+      "cacheReadTokens": 9600,
+      "reasoningTokens": 490
+    },
+    {
+      "turn": 1,
+      "step": 8,
+      "inputTokens": 179,
+      "outputTokens": 176,
+      "cacheReadTokens": 11648,
+      "reasoningTokens": 23
+    },
+    {
+      "turn": 1,
+      "step": 9,
+      "inputTokens": 174,
+      "outputTokens": 64,
+      "cacheReadTokens": 11904,
+      "reasoningTokens": 0
+    },
+    {
+      "turn": 1,
+      "step": 10,
+      "inputTokens": 903,
+      "outputTokens": 129,
+      "cacheReadTokens": 12032,
+      "reasoningTokens": 18
+    },
+    {
+      "turn": 1,
+      "step": 11,
+      "inputTokens": 787,
+      "outputTokens": 178,
+      "cacheReadTokens": 13056,
+      "reasoningTokens": 0
+    }
+  ],
+  "total": {
+    "inputTokens": 9830,
+    "cacheReadTokens": 98688,
+    "outputTokens": 4933,
+    "reasoningTokens": 2688
+  },
+  "model": "deepseek-v4-flash",
+  "prefix": {
+    "toolCount": 12,
+    "toolChars": 12452,
+    "systemChars": 1878
+  },
+  "pricedExactly": true,
+  "costUsd": 0.0030337664000000004
+}

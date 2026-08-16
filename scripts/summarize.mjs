@@ -46,6 +46,8 @@ function arm(runs, task, model, kind) {
   return {
     n: hit.length,
     cost: mean(hit.map((r) => r.costUsd)),
+    costMin: Math.min(...hit.map((r) => r.costUsd)),
+    costMax: Math.max(...hit.map((r) => r.costUsd)),
     miss: mean(hit.map((r) => r.total.inputTokens)),
     prompt: mean(hit.map((r) => r.total.inputTokens + r.total.cacheReadTokens)),
     output: mean(hit.map((r) => r.total.outputTokens)),
@@ -91,6 +93,11 @@ function main() {
     console.log(`  output tokens   ${b.output.toFixed(0)} -> ${l.output.toFixed(0)}`)
     console.log(`  wall clock      ${b.wall.toFixed(1)}s -> ${l.wall.toFixed(1)}s`)
     console.log(`  cost            $${b.cost.toFixed(6)} -> $${l.cost.toFixed(6)}  (${saving.toFixed(1)}%, $${(b.cost - l.cost).toFixed(6)} per session)`)
+    const overlap = l.costMax > b.costMin
+    console.log(
+      `  per-run range   $${b.costMin.toFixed(6)}-${b.costMax.toFixed(6)} vs $${l.costMin.toFixed(6)}-${l.costMax.toFixed(6)}` +
+        `  ${overlap ? 'RANGES OVERLAP, the arms are not separated by this data' : 'ranges separate'}`,
+    )
     console.log(`  deliverable     ${b.verifiable ? (b.allVerified && l.allVerified ? 'identical, all tests pass in every run' : 'MISMATCH') : 'task ships no suite'}`)
     console.log()
   }

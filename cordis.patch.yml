@@ -5,8 +5,8 @@
 # https://api-docs.deepseek.com/quick_start/pricing on 2026-08-16). The first
 # request of every session pays the whole prompt prefix at the miss rate, and
 # that prefix is dominated by tool schemas. Measured against dsh 0.1.0-rc.6 the
-# default prefix is 25 tools and 31,144 characters; this patch takes it to
-# 12 tools and 14,728 characters.
+# default prefix is 25 tools and 30,282 characters; this patch takes it to
+# 12 tools and 14,305 characters.
 #
 # Only tool rows are disabled. The services behind them stay mounted, so
 # anything that injects them still resolves. Disabling a tool row also drops the

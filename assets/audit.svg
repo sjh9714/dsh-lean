@@ -36,9 +36,9 @@
   <text x="22" y="692" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">        922  glob</text>
   <text x="22" y="730" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  dsh-lean would remove 13 of your 25 tools</text>
   <text x="22" y="749" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">    13,730 of 30,282 prefix chars  (45.3%)</text>
-  <text x="22" y="768" fill="#3fb950" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">    estimated saving on this session   ~3,739 cache-miss tokens, ~$0.000523  (23% of what it cost)</text>
+  <text x="22" y="768" fill="#3fb950" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">    estimated saving on this session   ~3,711 cache-miss tokens, ~$0.000520  (23% of what it cost)</text>
   <text x="22" y="806" fill="#6e7681" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  Estimated by scaling your own first-request tokens by the share of prefix</text>
-  <text x="22" y="825" fill="#6e7681" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  characters removed. Benchmarked end to end it came out at 18% to 42%.</text>
-  <text x="22" y="863" fill="#58a6ff" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">    dsh plugin --profile web add dsh-lean</text>
+  <text x="22" y="825" fill="#6e7681" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">  characters removed. Benchmarked end to end it came out at 7% to 42%.</text>
+  <text x="22" y="863" fill="#58a6ff" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">    dsh plugin --profile headless add dsh-lean</text>
   <text x="22" y="882" fill="#58a6ff" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve">    https://github.com/sjh9714/dsh-lean</text>
 </svg>

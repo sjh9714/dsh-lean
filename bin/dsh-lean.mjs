@@ -27,7 +27,6 @@ const REMOVES = new Set([
   'list_agents',
   'send_message',
   'interrupt_agent',
-  'subagent_report',
   'create_goal',
   'update_goal',
   'get_goal',
@@ -216,7 +215,14 @@ function main() {
   // This is an estimate from your own numbers, not a second measurement.
   const firstMiss = r.requests[0].inputTokens ?? 0
   const share = removedChars / prefixChars
-  const tokensSaved = Math.round(firstMiss * share)
+  // A first request routinely carries more than the prefix, an AGENTS.md or one
+  // pasted file does it, so scaling the raw miss count by a prefix share can
+  // claim to remove more tokens than the prefix contains. Cap the base at the
+  // prefix's own token estimate. 3.7 chars per token is the ratio measured on
+  // this project's own runs, 30,282 prefix chars against 8,246 first-request
+  // tokens.
+  const prefixTokens = prefixChars / 3.7
+  const tokensSaved = Math.round(Math.min(firstMiss, prefixTokens) * share)
   const saved = (tokensSaved * price.cacheMissIn) / 1e6
 
   console.log(`  dsh-lean would remove ${removable.length} of your ${r.tools.length} tools`)
@@ -227,7 +233,7 @@ function main() {
   )
   console.log()
   console.log('  Estimated by scaling your own first-request tokens by the share of prefix')
-  console.log('  characters removed. Benchmarked end to end it came out at 18% to 42%.')
+  console.log('  characters removed. Benchmarked end to end it came out at 7% to 42%.')
   console.log()
   console.log('    dsh plugin --profile headless add dsh-lean')
   console.log('    https://github.com/sjh9714/dsh-lean')
