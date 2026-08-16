@@ -8,15 +8,19 @@
 [![runs](https://img.shields.io/badge/实测-32_次运行-blue)](#自己复现)
 [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
+**dsh 在读到你的提示词之前，已经发出去 8,246 个 token。其中 3,700 个是你的会话从来不会调用的工具。**
+
+缓存未命中的单价是命中的 50 倍，而每场会话的第一个请求要按未命中价把整个工具 schema 前缀付一遍。一个 6 请求的任务，三次运行平均，仅这一个请求就占了**整场账单的 52%**。
+
+在你自己的会话上验一下。什么都不装，也没有任何数据离开你的机器。
+
 ```sh
-npx dsh-lean audit          # 先看你自己的 token 花在哪了，什么都不用装
+npx dsh-lean audit
 ```
 
 <img src="assets/audit.svg" alt="npx dsh-lean audit 的输出，逐请求缓存拆分、前缀里最大的工具 schema，以及 dsh-lean 会移除哪些" width="100%">
 
-**同样的结果，更小的账单。** 一个 DeepSeek Harness preset，关掉单智能体编码会话根本用不到的工具，把提示词前缀压掉 53%。这值多少钱，实测在整场会话账单的 7% 到 42% 之间。
-
-先跑 audit。它读的是 dsh 本来就写好的会话日志，会列出每个请求的缓存命中拆分、你自己前缀里各个工具 schema 的大小排名，以及这个 preset 在那一场会话上本来能省多少。什么都不装，也没有任何数据离开你的机器。
+dsh-lean 就是那个修法：一个把这些工具行关掉的 preset，把提示词前缀压掉 53%。这值多少钱，实测在整场会话账单的 7% 到 42% 之间。
 
 下面每个数字都来自 DeepSeek API 自己返回的用量统计，产出这些数字的测量脚本就在本仓库里。
 

@@ -8,15 +8,19 @@ English | [简体中文](./README.zh-CN.md)
 [![runs](https://img.shields.io/badge/measured_over-32_runs-blue)](#reproduce-it)
 [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
+**dsh sends 8,246 tokens before it reads your prompt. 3,700 of them are tools your session never calls.**
+
+A cache miss costs 50x a cache hit, and the first request of every session pays the entire tool-schema prefix at the miss rate. On a six-request task, measured over three runs, that one request was **52% of the whole bill**.
+
+Check it on your own session. Nothing is installed and nothing leaves your machine.
+
 ```sh
-npx dsh-lean audit          # see where your own tokens went, installs nothing
+npx dsh-lean audit
 ```
 
 <img src="assets/audit.svg" alt="npx dsh-lean audit output, showing the per-request cache split, the largest tool schemas in the prefix, and what dsh-lean would remove" width="100%">
 
-**Same answer, smaller bill.** A DeepSeek Harness preset that removes the tool schemas a single-agent coding session never calls, cutting the prompt prefix by 53%. What that is worth ranges from 7% to 42% of a session bill, measured.
-
-Start with the audit. It reads a session log dsh already wrote, shows the cache-hit split of every request, ranks the tool schemas in your own prefix, and tells you what this preset would have saved on that exact session. Nothing is installed and nothing leaves your machine.
+dsh-lean is the fix: a preset that turns those tool rows off, cutting the prompt prefix by 53%. What that is worth ranges from 7% to 42% of a session bill.
 
 Every number below came out of the DeepSeek API's own usage accounting, and the harness that produced them is in this repository.
 
