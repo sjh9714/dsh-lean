@@ -60,6 +60,12 @@ dsh plugin --profile web add dsh-lean
 
 Replace `web` with whichever profile you use. That is the whole installation, there is no config file to edit.
 
+Installing straight from the repository also works, though the npm form above is better because a prebuilt package skips pnpm's `allowBuilds` approval step.
+
+```sh
+dsh plugin --profile web add "github:sjh9714/dsh-lean"
+```
+
 To remove it.
 
 ```sh

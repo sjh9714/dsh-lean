@@ -60,6 +60,12 @@ dsh plugin --profile web add dsh-lean
 
 把 `web` 换成你在用的 profile。装完就这样，没有配置文件要改。
 
+直接从仓库装也行，不过上面的 npm 形式更好，预构建的包能跳过 pnpm 的 `allowBuilds` 构建授权步骤。
+
+```sh
+dsh plugin --profile web add "github:sjh9714/dsh-lean"
+```
+
 卸载。
 
 ```sh
