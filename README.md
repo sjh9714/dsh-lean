@@ -4,13 +4,15 @@ English | [简体中文](./README.zh-CN.md)
 
 [![npm](https://img.shields.io/npm/v/dsh-lean)](https://www.npmjs.com/package/dsh-lean)
 [![prefix](https://img.shields.io/badge/prompt_prefix-53%25_smaller-brightgreen)](#measured)
-[![cost](https://img.shields.io/badge/session_cost-7--42%25_lower-brightgreen)](#measured)
+[![cost](https://img.shields.io/badge/session_cost-2--41%25_lower-brightgreen)](#measured)
 [![runs](https://img.shields.io/badge/measured_over-32_runs-blue)](#reproduce-it)
 [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
 **dsh sends 8,246 tokens before it reads your prompt. 3,700 of them are tools your session never calls.**
 
-A cache miss costs 50x a cache hit, and the first request of every session pays the entire tool-schema prefix at the miss rate. On a six-request task, measured over three runs, that one request was **52% of the whole bill**.
+A cache miss costs 31x a cache hit, and the first request of every session pays the entire tool-schema prefix at the miss rate. On a six-request task, averaged over three runs, paying that prefix once is **46% of the whole bill**.
+
+That token count does not move with pricing. The money does, and DeepSeek repriced at 2026-08-16 16:00 UTC. Under the previous flat card the same runs put that payment at 52% of the bill and the miss-to-hit ratio at 50x. Every figure on this page is given under the card in force now.
 
 Check it on your own session. Nothing is installed and nothing leaves your machine.
 
@@ -20,7 +22,7 @@ npx dsh-lean audit
 
 <img src="assets/audit.svg" alt="npx dsh-lean audit output, showing the per-request cache split, the largest tool schemas in the prefix, and what dsh-lean would remove" width="100%">
 
-dsh-lean is the fix: a preset that turns those tool rows off, cutting the prompt prefix by 53%. What that is worth ranges from 7% to 42% of a session bill.
+dsh-lean is the fix: a preset that turns those tool rows off, cutting the prompt prefix by 53%. What that is worth ranges from 2% to 41% of a session bill, and the low end is real.
 
 Every number below came out of the DeepSeek API's own usage accounting, and the harness that produced them is in this repository.
 
@@ -32,12 +34,14 @@ The prefix reduction is deterministic. The money is not, so both are reported.
 
 | task | runs per arm | cache-miss tokens | session cost | same deliverable |
 |---|---|---|---|---|
-| one question, no edits | 3 | 8,600 to 4,912  **-43%** | $0.001292 to $0.000755  **-42%** | no suite to run |
-| fix three failing tests | 3 | 11,538 to 8,225  **-29%** | $0.002201 to $0.001671  **-24%** | yes, all 9 tests pass both ways |
-| implement a module from sixteen tests | 7 | 10,376 to 7,470  **-28%** | $0.002542 to $0.002373  **-7%** | yes, all 16 tests pass both ways |
-| fix three failing tests, on `deepseek-v4-pro` | 3 | 10,949 to 8,507  **-22%** | $0.006139 to $0.004906  **-20%** | yes, all 9 tests pass both ways |
+| one question, no edits | 3 | 8,600 to 4,912  **-43%** | $0.002106 to $0.001243  **-41%** | no suite to run |
+| fix three failing tests | 3 | 11,538 to 8,225  **-29%** | $0.003940 to $0.003048  **-23%** | yes, all 9 tests pass both ways |
+| implement a module from sixteen tests | 7 | 10,376 to 7,470  **-28%** | $0.004866 to $0.004787  **-2%** | yes, all 16 tests pass both ways |
+| fix three failing tests, on `deepseek-v4-pro` | 3 | 10,949 to 8,507  **-22%** | $0.010993 to $0.008817  **-20%** | yes, all 9 tests pass both ways |
 
-**Read the third row before the first one.** Cache-miss tokens fall by 22% to 43% on every task, which is the part this patch controls directly. Turning that into money is not reliable. On the implementation task the leaner agent took more steps, 4.4 requests against 5.4, and produced 24% more output, which ate most of the saving. Its per-run cost ranges overlap, $0.001749 to $0.002996 for the default against $0.001854 to $0.003034 for dsh-lean, so on that task a dsh-lean run can cost more than a default run. It is in the table because it is the honest floor, and it is the row that needed seven runs per arm before it settled.
+Cache-miss tokens are the measurement. The dollars are that measurement priced, and the price moved on 2026-08-16, so `scripts/summarize.mjs` recomputes money from the committed token counts on every run rather than reading back a figure baked in at run time. It prints both cards.
+
+**Read the third row before the first one.** Cache-miss tokens fall by 22% to 43% on every task, which is the part this patch controls directly. Turning that into money is not reliable. On the implementation task the leaner agent took more steps, 4.4 requests against 5.4, and produced 24% more output, which ate most of the saving. Its per-run cost ranges overlap, $0.003072 to $0.005919 for the default against $0.003626 to $0.006109 for dsh-lean, so on that task a dsh-lean run can cost more than a default run. It is in the table because it is the honest floor, and it is the row that needed seven runs per arm before it settled.
 
 The other three rows have ranges that do separate. `node scripts/summarize.mjs` prints n and the per-run range for every row, so this page cannot quote a mean without its spread.
 
@@ -52,13 +56,18 @@ Prefix sent on the first request of a session. These are the numbers `npx dsh-le
 
 ## Why this saves money
 
-DeepSeek bills a cache-miss input token at **50x** the cache-hit rate, $0.14 against $0.0028 per million for `deepseek-v4-flash`. That is the flat card, read from [the pricing page](https://api-docs.deepseek.com/quick_start/pricing) on 2026-08-16 before the 16:00 UTC repricing, and every run above was measured under it.
+DeepSeek bills a cache-miss input token at **31x** the cache-hit rate, $0.22 against $0.007 per million for `deepseek-v4-flash`. Read from [the pricing page](https://api-docs.deepseek.com/quick_start/pricing). Those are off-peak rates; peak is 01:00-04:00 and 06:00-10:00 UTC at exactly double, so every percentage on this page holds in either window and only the absolute dollars change.
 
-**The card changed the same day.** DeepSeek moved to peak and off-peak billing at 2026-08-16 16:00 UTC, and the tiers did not move together. Reconciled against a billing console in [deepseek-harness#2064](https://github.com/deepseek-ai/deepseek-harness/discussions/2064), `deepseek-v4-pro` cache hits went from $0.003625 to $0.022 while cache misses went from $0.435 to $0.66, so its miss to hit ratio collapses from 120x to 30x. Repricing the committed `v4-pro` runs under that new card moves the saving from 20.1% to **19.8%**, while the absolute money saved rises from $0.001233 to **$0.002176** a session, because cache reads become 9.9% of the bill instead of 2.9% and this patch shrinks those too. The mechanism survives the repricing. The `v4-flash` figures under the new card are not verified here.
+The first request of every session pays the entire prompt prefix at the miss rate. On the six-request task above that one payment was **46% of the whole bill**, averaged over three runs, and it was the same 8,246 tokens every time. From the second request on, the prefix is a cache hit and costs almost nothing.
 
-The first request of every session pays the entire prompt prefix at the miss rate. On the six-request task above it was **52% of the whole bill**, averaged over three runs, and it was the same 8,246 tokens every time. From the second request on, the prefix is a cache hit and costs almost nothing.
+So the prefix is not expensive because it is large. It is expensive because it is paid once at 31x. Shrinking it is the one lever that touches the part of the bill that actually hurts.
 
-So the prefix is not expensive because it is large. It is expensive because it is paid once at 50x. Shrinking it is the one lever that touches the part of the bill that actually hurts.
+**The card this was measured under is gone.** Every run above was measured before DeepSeek moved to peak and off-peak billing at 2026-08-16 16:00 UTC, and the tiers did not move together. On `deepseek-v4-pro`, reconciled against a billing console in [deepseek-harness#2064](https://github.com/deepseek-ai/deepseek-harness/discussions/2064), cache hits went from $0.003625 to $0.022 while cache misses went from $0.435 to $0.66, so its miss to hit ratio collapses from 120x to 30x, and flash's from 50x to 31x.
+
+The whole table above is already repriced. What that repricing did to it is worth stating plainly, because it cuts both ways.
+
+- The mechanism survived. Cache reads went from 2.7% of the `v4-pro` bill to 9.2%, and this patch shrinks those too, so the money saved per pro session nearly doubled, $0.001233 to **$0.002176**, while the percentage barely moved, 20.1% to 19.8%.
+- The floor got worse. Output is now billed at 3x the cache-miss rate rather than 2x, and output is what dilutes this patch, so the implementation task fell from 7% saved to **2%**. The headline range moved from 7-42% to **2-41%**.
 
 Disabling a tool row also drops the paragraph the system prompt generates to explain that tool, which is why the system prompt shrinks by 55% as well.
 
@@ -108,8 +117,8 @@ Do not install it if you use subagents, workflows, the goal system, background j
 
 Two more honest limits.
 
-- **The saving is diluted by output, not by session length.** It removes a fixed amount, roughly 3,700 cache-miss tokens, from the front of each session, and whatever else the session spends dilutes that. Output is the biggest diluter, billed at twice the cache-miss rate. The 3-request question saves 42% and the 4-request implementation task saves 7%, so request count is not the variable, output volume is.
-- **The percentage does not grow on the expensive model.** `deepseek-v4-pro` bills a cache miss at 120x a cache hit against flash's 50x, so the prefix looks like a bigger target, but pro also bills output at twice its miss rate. Output grows as a share of the bill and cancels most of the gain. Measured, pro saved 20% against flash's 24% on the same task. The absolute money saved is what changes, not the percentage.
+- **The saving is diluted by output, not by session length.** It removes a fixed amount, roughly 3,700 cache-miss tokens, from the front of each session, and whatever else the session spends dilutes that. Output is the biggest diluter, billed at 3x the cache-miss rate. The 3-request question saves 41% and the 4-request implementation task saves 2%, so request count is not the variable, output volume is.
+- **The percentage does not grow on the expensive model.** `deepseek-v4-pro` costs 3x flash across the board, so it buys 3x the absolute saving and the same percentage. Measured, pro saved 20% against flash's 23% on the same task. Under the old flat card pro had a 120x miss to hit ratio against flash's 50x, which looked like a reason to expect more; it was not, and the new card removes even the appearance by putting both models at about 30x.
 
 ## Reproduce it
 
@@ -128,7 +137,7 @@ node scripts/run-bench.mjs bench/task-01                             # default
 node scripts/run-bench.mjs bench/task-01 --patch cordis.patch.yml    # dsh-lean
 node scripts/summarize.mjs
 
-# the v4-pro row, same tasks priced against a 120x cache ratio
+# the v4-pro row, same tasks on the expensive model
 node scripts/run-bench.mjs bench/task-01 --patch bench/pro.patch.yml
 node scripts/run-bench.mjs bench/task-01 --patch bench/pro.patch.yml --patch cordis.patch.yml
 ```

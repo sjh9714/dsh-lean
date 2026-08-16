@@ -9,6 +9,7 @@
 
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
 import { join, resolve } from 'node:path'
+import { costUsd, LEGACY_FLAT } from '../lib/pricing.mjs'
 
 const REPO = resolve(import.meta.dirname, '..')
 const DIR = join(REPO, 'bench/results')
@@ -29,6 +30,13 @@ function load() {
 
 const mean = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : NaN)
 
+// Recompute money from the stored token counts every time rather than reading
+// the costUsd the run recorded. Token counts are a measurement and never go
+// stale; a dollar figure baked in at run time silently rots the day the
+// provider reprices, which DeepSeek did on 2026-08-16.
+const priceOf = (r, card) =>
+  costUsd(r.total, r.model ?? 'deepseek-v4-flash', card ? { card } : undefined).usd
+
 // Classify by the tool count the run actually sent, not by whether a --patch
 // argument was present. dsh-lean can arrive either as a --patch overlay or as an
 // installed bundle, and only the measured prefix distinguishes the two arms.
@@ -45,9 +53,10 @@ function arm(runs, task, model, kind) {
   )
   return {
     n: hit.length,
-    cost: mean(hit.map((r) => r.costUsd)),
-    costMin: Math.min(...hit.map((r) => r.costUsd)),
-    costMax: Math.max(...hit.map((r) => r.costUsd)),
+    cost: mean(hit.map((r) => priceOf(r))),
+    costLegacy: mean(hit.map((r) => priceOf(r, LEGACY_FLAT))),
+    costMin: Math.min(...hit.map((r) => priceOf(r))),
+    costMax: Math.max(...hit.map((r) => priceOf(r))),
     miss: mean(hit.map((r) => r.total.inputTokens)),
     prompt: mean(hit.map((r) => r.total.inputTokens + r.total.cacheReadTokens)),
     output: mean(hit.map((r) => r.total.outputTokens)),
@@ -93,6 +102,7 @@ function main() {
     console.log(`  output tokens   ${b.output.toFixed(0)} -> ${l.output.toFixed(0)}`)
     console.log(`  wall clock      ${b.wall.toFixed(1)}s -> ${l.wall.toFixed(1)}s`)
     console.log(`  cost            $${b.cost.toFixed(6)} -> $${l.cost.toFixed(6)}  (${saving.toFixed(1)}%, $${(b.cost - l.cost).toFixed(6)} per session)`)
+    console.log(`  under old card  $${b.costLegacy.toFixed(6)} -> $${l.costLegacy.toFixed(6)}  (${((1 - l.costLegacy / b.costLegacy) * 100).toFixed(1)}%)`)
     const overlap = l.costMax > b.costMin
     console.log(
       `  per-run range   $${b.costMin.toFixed(6)}-${b.costMax.toFixed(6)} vs $${l.costMin.toFixed(6)}-${l.costMax.toFixed(6)}` +

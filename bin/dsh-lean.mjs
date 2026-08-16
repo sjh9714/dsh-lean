@@ -180,6 +180,7 @@ function main() {
   console.log(`  prompt tokens      ${n(prompt)}`)
   console.log(`  cache hit rate     ${((r.total.hit / prompt) * 100).toFixed(1)}%`)
   console.log(`  cache-miss tokens  ${n(r.total.miss)}   <- billed at ${ratio}x the cache-hit rate`)
+  console.log('  cost is off-peak; peak hours 01-04 and 06-10 UTC are exactly double')
   console.log(`  output tokens      ${n(r.total.out)}`)
   console.log(`  cost               ${usd(cost)}${exact ? '' : '   (priced with v4-flash rates, model not in the table)'}`)
 
@@ -233,7 +234,7 @@ function main() {
   )
   console.log()
   console.log('  Estimated by scaling your own first-request tokens by the share of prefix')
-  console.log('  characters removed. Benchmarked end to end it came out at 7% to 42%.')
+  console.log('  characters removed. Benchmarked end to end it came out at 2% to 41%.')
   console.log()
   console.log('    dsh plugin --profile headless add dsh-lean')
   console.log('    https://github.com/sjh9714/dsh-lean')
