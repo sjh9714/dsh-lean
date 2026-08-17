@@ -4,9 +4,37 @@
 
 [![npm](https://img.shields.io/npm/v/dsh-lean)](https://www.npmjs.com/package/dsh-lean)
 [![prefix](https://img.shields.io/badge/提示词前缀-缩小_53%25-brightgreen)](#实测)
+[![peak](https://img.shields.io/badge/峰时-按_2_倍计费-red)](#账单的另一半在你打字之前就发出去了)
 [![cost](https://img.shields.io/badge/会话花费-降低_2--41%25-brightgreen)](#实测)
 [![runs](https://img.shields.io/badge/实测-32_次运行-blue)](#自己复现)
 [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+
+**DeepSeek 从 2026-08-16 起峰时按两倍计费，而峰时正好是上班时间。**
+
+峰时是 UTC 01:00-04:00 和 06:00-10:00，其余时段是谷时，谷时正好是峰时的一半。
+
+| 你的时区 | 按 2 倍计费的峰时 |
+|---|---|
+| UTC+8 北京、上海、新加坡 | 09:00-12:00 和 14:00-18:00 |
+| UTC+9 东京、首尔 | 10:00-13:00 和 15:00-19:00 |
+| UTC+0 伦敦 | 01:00-04:00 和 06:00-10:00 |
+
+如果你按国内作息写代码，几乎每一行都是按贵的那档付的，中间只空出午休。把长时间跑的任务挪到晚上，账单直接减半，而且不用改任何配置。一场会话里再没有第二个 2 倍量级的杠杆。
+
+看看你上一场会话到底付了多少，以及同样的运行放在谷时要多少。什么都不装，也没有任何数据离开你的机器。
+
+```sh
+npx dsh-lean audit
+```
+
+```
+  ran 08:42 to 08:42 UTC
+  3 of 3 requests hit peak hours (01-04 and 06-10 UTC), 100% of the tokens
+  you paid             $0.000951
+  same run off-peak    $0.000476   <- $0.000476 less, a 50% cut
+```
+
+## 账单的另一半在你打字之前就发出去了
 
 **dsh 在读到你的提示词之前，已经发出去 8,246 个 token。其中 3,700 个是你的会话从来不会调用的工具。**
 
@@ -14,11 +42,7 @@
 
 token 数不随价格变动，钱会。DeepSeek 于 2026-08-16 16:00 UTC 调价。在旧的统一价目表下，同样这些运行里这一笔占账单 52%，未命中与命中的比值是 50 倍。本页所有金额都按现行价目表给出。
 
-在你自己的会话上验一下。什么都不装，也没有任何数据离开你的机器。
-
-```sh
-npx dsh-lean audit
-```
+同一行命令也会把这部分打出来，按哪个工具 schema 最费钱排序。
 
 <img src="assets/audit.svg" alt="npx dsh-lean audit 的输出，逐请求缓存拆分、前缀里最大的工具 schema，以及 dsh-lean 会移除哪些" width="100%">
 

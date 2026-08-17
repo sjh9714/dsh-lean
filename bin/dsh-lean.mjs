@@ -13,7 +13,7 @@ import { join, resolve, basename } from 'node:path'
 import { homedir } from 'node:os'
 import { execFileSync } from 'node:child_process'
 import { decodeZstdFrames } from '../lib/zstd-frames.mjs'
-import { costUsd, priceFor } from '../lib/pricing.mjs'
+import { costUsd, priceFor, isPeakUtc, PEAK_MULTIPLIER } from '../lib/pricing.mjs'
 import { projectKey } from '../lib/project-key.mjs'
 
 const DSH_HOME = process.env.DSH_HOME ?? join(homedir(), '.dsh')
@@ -117,6 +117,9 @@ function analyze(events) {
       byStep.set(`${ev.data.turn}/${ev.data.step}`, {
         turn: ev.data.turn,
         step: ev.data.step,
+        // Each event carries its own epoch ms, which is what makes the peak and
+        // off-peak split answerable per request instead of per session.
+        time: ev.time ?? null,
         ...ev.data.chunk.usage,
       })
     }
@@ -139,6 +142,50 @@ function analyze(events) {
 
 const n = (x) => x.toLocaleString('en-US')
 const usd = (x) => `$${x.toFixed(6)}`
+
+// DeepSeek moved to peak and off-peak billing at 2026-08-16 16:00 UTC, and peak
+// is exactly double. Peak in UTC is 01-04 and 06-10, which lands on 09-12 and
+// 14-18 in UTC+8 and 10-13 and 15-19 in UTC+9, so for most of Asia the peak
+// window covers the working day. Nothing else in a session is a 2x lever, so it
+// is worth reporting even though this tool cannot change it for you.
+function reportPeak(r, offPeakCost) {
+  const timed = r.requests.filter((u) => typeof u.time === 'number')
+  console.log()
+  if (!timed.length) {
+    console.log('  This session recorded no per-request timestamps, so the peak and off-peak')
+    console.log('  split cannot be shown. Peak is 01-04 and 06-10 UTC at double the rate.')
+    return
+  }
+
+  const peak = timed.filter((u) => isPeakUtc(u.time))
+  const label = (u) => new Date(u.time).toISOString().slice(11, 16)
+  const first = label(timed[0])
+  const last = label(timed[timed.length - 1])
+
+  console.log(`  ran ${first} to ${last} UTC`)
+
+  if (!peak.length) {
+    console.log('  all off-peak, which is the cheaper half of the day. Nothing to move.')
+    return
+  }
+
+  // Requests are what carry cost, so weight the peak share by each request's own
+  // billed tokens rather than by request count.
+  const weigh = (list) =>
+    list.reduce((a, u) => a + (u.inputTokens ?? 0) + (u.cacheReadTokens ?? 0) + (u.outputTokens ?? 0), 0)
+  const peakShare = weigh(peak) / weigh(timed) || 0
+  const paid = offPeakCost * (1 + peakShare * (PEAK_MULTIPLIER - 1))
+  const saved = paid - offPeakCost
+
+  console.log(
+    `  ${peak.length} of ${timed.length} requests hit peak hours (01-04 and 06-10 UTC), ` +
+      `${(peakShare * 100).toFixed(0)}% of the tokens`,
+  )
+  console.log(`  you paid             ${usd(paid)}`)
+  console.log(`  same run off-peak    ${usd(offPeakCost)}   <- ${usd(saved)} less, a ${((saved / paid) * 100).toFixed(0)}% cut`)
+  console.log('  peak is 09-12 and 14-18 in UTC+8, 10-13 and 15-19 in UTC+9. Moving long')
+  console.log('  runs outside those hours halves the bill and changes no configuration.')
+}
 
 function main() {
   const args = process.argv.slice(2).filter((a) => a !== 'audit')
@@ -180,9 +227,10 @@ function main() {
   console.log(`  prompt tokens      ${n(prompt)}`)
   console.log(`  cache hit rate     ${((r.total.hit / prompt) * 100).toFixed(1)}%`)
   console.log(`  cache-miss tokens  ${n(r.total.miss)}   <- billed at ${ratio}x the cache-hit rate`)
-  console.log('  cost is off-peak; peak hours 01-04 and 06-10 UTC are exactly double')
   console.log(`  output tokens      ${n(r.total.out)}`)
   console.log(`  cost               ${usd(cost)}${exact ? '' : '   (priced with v4-flash rates, model not in the table)'}`)
+
+  reportPeak(r, cost)
 
   if (!prefixChars) {
     console.log()

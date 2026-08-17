@@ -1,5 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { isPeakUtc } from '../lib/pricing.mjs'
 import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { homedir } from 'node:os'
@@ -119,4 +120,11 @@ test('disableRows sets disabled on each named top-level row, once', async () => 
 test('disableRows returns null when a row it expects is gone', async () => {
   const { disableRows } = await import('../index.mjs')
   assert.equal(disableRows('- id: persona\n', ['tool-goal']), null)
+})
+
+test('isPeakUtc marks the two peak windows and nothing else', () => {
+  const at = (h) => Date.UTC(2026, 7, 17, h, 30)
+  // 01:00-04:00 and 06:00-10:00 UTC are peak, the boundaries are half open.
+  for (const h of [1, 2, 3, 6, 7, 8, 9]) assert.equal(isPeakUtc(at(h)), true, `${h} should be peak`)
+  for (const h of [0, 4, 5, 10, 11, 16, 23]) assert.equal(isPeakUtc(at(h)), false, `${h} should be off-peak`)
 })

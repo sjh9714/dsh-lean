@@ -4,9 +4,37 @@ English | [简体中文](./README.zh-CN.md)
 
 [![npm](https://img.shields.io/npm/v/dsh-lean)](https://www.npmjs.com/package/dsh-lean)
 [![prefix](https://img.shields.io/badge/prompt_prefix-53%25_smaller-brightgreen)](#measured)
+[![peak](https://img.shields.io/badge/peak_hours-billed_2x-red)](#the-other-half-of-the-bill-is-sent-before-you-type)
 [![cost](https://img.shields.io/badge/session_cost-2--41%25_lower-brightgreen)](#measured)
 [![runs](https://img.shields.io/badge/measured_over-32_runs-blue)](#reproduce-it)
 [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+
+**DeepSeek started charging double at peak hours on 2026-08-16, and peak is the working day.**
+
+Peak is 01:00-04:00 and 06:00-10:00 UTC. Off-peak is every other hour at exactly half.
+
+| your clock | peak hours, billed at 2x |
+|---|---|
+| UTC+8 Beijing, Shanghai, Singapore | 09:00-12:00 and 14:00-18:00 |
+| UTC+9 Tokyo, Seoul | 10:00-13:00 and 15:00-19:00 |
+| UTC+0 London | 01:00-04:00 and 06:00-10:00 |
+
+If you work Asian hours, nearly every line of code you write is billed at the expensive rate, with a gap at lunch. Moving a long run to the evening halves its bill and changes no configuration. Nothing else in a session is a 2x lever.
+
+See what your own last session actually paid, and what it would have cost off-peak. Nothing is installed and nothing leaves your machine.
+
+```sh
+npx dsh-lean audit
+```
+
+```
+  ran 08:42 to 08:42 UTC
+  3 of 3 requests hit peak hours (01-04 and 06-10 UTC), 100% of the tokens
+  you paid             $0.000951
+  same run off-peak    $0.000476   <- $0.000476 less, a 50% cut
+```
+
+## The other half of the bill is sent before you type
 
 **dsh sends 8,246 tokens before it reads your prompt. 3,700 of them are tools your session never calls.**
 
@@ -14,11 +42,7 @@ A cache miss costs 31x a cache hit, and the first request of every session pays 
 
 That token count does not move with pricing. The money does, and DeepSeek repriced at 2026-08-16 16:00 UTC. Under the previous flat card the same runs put that payment at 52% of the bill and the miss-to-hit ratio at 50x. Every figure on this page is given under the card in force now.
 
-Check it on your own session. Nothing is installed and nothing leaves your machine.
-
-```sh
-npx dsh-lean audit
-```
+The same command shows you that too, ranked by which tool schema is costing you the most.
 
 <img src="assets/audit.svg" alt="npx dsh-lean audit output, showing the per-request cache split, the largest tool schemas in the prefix, and what dsh-lean would remove" width="100%">
 
